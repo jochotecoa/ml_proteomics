@@ -1,6 +1,9 @@
 source('script/functions/functions_JOA.R')
 forceLibrary(c('dplyr', 'tibble', 'biomaRt'))
 
+
+# Get mRNA data -----------------------------------------------------------
+
 mrna_dir = '/share/analysis/hecatos/juantxo/mRNA/quant_salmon/Homo_sapiens.GRCh38.cdna.ncrna.circbase/'
 tissue = 'cardiac'
 compound = 't0_controls'
@@ -31,7 +34,19 @@ mrna_unip_df = mrna_df %>%
   rownames_to_column('ensembl_transcript_id') %>% 
   merge.data.frame(y = mrna_prot_ids, by = 'ensembl_transcript_id', all.y = T)
 
-### Divide transcripts per protein (after connecting to protein expression data)
+
+# Get proteomics data -----------------------------------------------------
+
+prot_dir = '/ngs-data/data/hecatos/Cardiac/t0_controls/Protein/'
+
+source(file = 'script/data_cleaning/fix_ANT_proteomics_file.R')
+
+prot_df = mergeFiles(by_col = 'Row.Names', path = prot_dir, header = T, fill = F, sep = '\t', all_true = T)
+
+colnames(prot_df) = colnames(prot_df) %>% 
+  gsub(pattern = paste0(prot_dir), replacement = '')
+
+# Divide transcripts per protein (after connecting to protein expr --------
 
 dupl_mrna = mrna_unip_df$ensembl_transcript_id %>% 
   subset(., duplicated(.))
