@@ -28,12 +28,20 @@ forceLibrary <- function(list.of.packages) {
 }
 
 cleanProtIds = function(protein_table) {
+  colprotids = grepl('\\|', protein_table[1, ])
+  
+  if (!any(colprotids)) {
+    protein_table = protein_table %>% 
+      rownames_to_column()
+    colprotids = 'rowname'
+  }
   # Filter out double IDs
-  protein_table = protein_table[!grepl(protein_table[, 1], pattern = ':'), ]
+  
+  protein_table = protein_table[!grepl(protein_table[, colprotids], pattern = ':'), ]
   if (class(protein_table) != "data.frame") {
     protein_table = as.data.frame(protein_table)
   }
-  names = strsplit(as.character(protein_table[, 1]), '\\|')
+  names = strsplit(as.character(protein_table[, colprotids]), '\\|')
   names = as.character(lapply(names, '[', 2))
   protein_table$uniprot_gn = names
   return(protein_table)
@@ -365,8 +373,12 @@ shift_median = function(df, median_of_medians) {
 }
 
 normalizeProteomics = function(df) {
-	medians = apply(df, 2, median, na.rm = T)
-	median_of_medians = median(medians, na.rm = T)
+  if (df %>% apply(2, class) %>% is.character %>% any()) {
+    stop()
+  }
+  common_set = na.omit(df)
+	medians = apply(common_set, 2, median)
+	median_of_medians = median(medians)
 	df = shift_median(df, median_of_medians)
 	return(df)
 }
