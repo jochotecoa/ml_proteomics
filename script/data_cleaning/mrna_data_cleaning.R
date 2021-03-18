@@ -107,7 +107,20 @@ t0_cols =
 
 prot_df = prot_df[, !duplicated(colnames(prot_df))] %>% 
   dplyr::select(matches('UNTR|DF2|^DMSO|000')) %>% 
-  cleanProtIds() 
+  cleanProtIds() %>% 
+  dplyr::select(!rowname) 
+
+prot_df = prot_df %>% 
+  remove_rownames() %>% 
+  column_to_rownames('uniprot_gn') 
+
+prot_df = 
+  prot_df %>% 
+  apply(2, unlist) %>% 
+  apply(2, as.numeric) %>% 
+  data.frame(row.names = rownames(prot_df)) %>% 
+  normalizeProteomics() %>% 
+  rownames_to_column('uniprot_gn')
 
 
 

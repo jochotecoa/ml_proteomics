@@ -373,8 +373,8 @@ shift_median = function(df, median_of_medians) {
 }
 
 normalizeProteomics = function(df) {
-  if (df %>% apply(2, class) %>% is.character %>% any()) {
-    stop()
+  if (df %>% apply(2, is.character) %>% any()) {
+    stop('at least one character column')
   }
   common_set = na.omit(df)
 	medians = apply(common_set, 2, median)
