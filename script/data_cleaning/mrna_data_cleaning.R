@@ -10,32 +10,41 @@ compound = 't0_controls'
 
 mrna_dir_spe = paste0(mrna_dir, tissue, '/', compound)
 
-mrna_df = mergeFiles(files_patt = 'quant.sf', by_col = 'Name', 
-                     path = mrna_dir_spe, all_true = T, recursive = T, 
-                     header = T)
+# mrna_df = mergeFiles(files_patt = 'quant.sf', by_col = 'Name', 
+#                      path = mrna_dir_spe, all_true = T, recursive = T, 
+#                      header = T)
+# 
+# saveRDS(object = mrna_df, file = 'data/salmon_cardiac.rds')
+
+mrna_df = readRDS(file = 'data/salmon_cardiac.rds')
+
+mrna_df = mrna_df %>% 
+  remove_rownames() %>% 
+  column_to_rownames('Name') %>% 
+  dplyr::select(contains('TPM'))
 
 colnames(mrna_df) = colnames(mrna_df) %>% 
   gsub(pattern = '/share/analysis/hecatos/juantxo/mRNA/quant_salmon/Homo_sapiens.GRCh38.cdna.ncrna.circbase/cardiac/t0_controls/', replacement = '') %>% 
-  gsub(pattern = '/quant.sf|_quant|TPM', replacement = '')
+  gsub(pattern = '/quant.sf|_quant|TPM_', replacement = '')
 
-mrna_df = mrna_df %>% 
-  column_to_rownames('Name') %>% 
-  select(contains('TPM'))
 
 rownames(mrna_df) = rownames(mrna_df) %>% 
   gsub('\\..*', '', .) 
 
-mart = openMart2018()
+# mart = openMart2018()
+# 
+# mrna_prot_ids = getBM(attributes = c('ensembl_transcript_id', 'uniprotswissprot'),
+#                       filters = 'ensembl_transcript_id',
+#                       values = rownames(mrna_df),
+#                       mart = mart)
+# 
+# saveRDS(object = mrna_prot_ids, file = 'data/mrna_prot_ids.rds')
 
-mrna_prot_ids = getBM(attributes = c('ensembl_transcript_id', 'uniprot_gn'), 
-                      filters = 'ensembl_transcript_id', 
-                      values = rownames(mrna_df), 
-                      mart = mart)
+mrna_prot_ids = readRDS(file = 'data/mrna_prot_ids.rds')
 
 mrna_unip_df = mrna_df %>% 
   rownames_to_column('ensembl_transcript_id') %>% 
-  merge.data.frame(y = mrna_prot_ids, by = 'ensembl_transcript_id', all.y = T)
-
+  merge.data.frame(y = mrna_prot_ids, by = 'ensembl_transcript_id', all.y = T) 
 
 # Get proteomics data -----------------------------------------------------
 
@@ -114,28 +123,30 @@ prot_df = prot_df %>%
   remove_rownames() %>% 
   column_to_rownames('uniprot_gn') 
 
-prot_df = 
-  prot_df %>% 
+prot_df = prot_df %>% 
   apply(2, unlist) %>% 
   apply(2, as.numeric) %>% 
   data.frame(row.names = rownames(prot_df)) %>% 
   normalizeProteomics() %>% 
-  rownames_to_column('uniprot_gn')
+  rownames_to_column('uniprotswissprot')
 
+prot_df = prot_df %>% 
+  melt.data.frame()
 
+colnames(prot_df)[2:3] = c('sample_name', 'proteomics_value')
 
-prot_df = 
-  prot_df %>% 
-  melt.data.frame() %>% 
-  head()
+prot_df$sample_name = prot_df$sample_name %>% 
+  gsub(pattern = 'DF2_The', replacement = 'DF2')
 
+# Not have transcrx quantification yet
+prot_df = prot_df %>% 
+  dplyr::filter(!grepl(pattern = 'DMSO|UNTR', x = sample_name))
 
-# Combine mRNA with proteins ----------------------------------------------
-
-mrna_unip_df = mrna_unip_df %>% 
-  merge.data.frame(y = prot_df)
+prot_df$uniprot_sample = paste(prot_df$uniprotswissprot, prot_df$sample_name, sep = '--')
 
 # Divide transcripts per protein (after connecting to protein expr --------
+
+mrna_unip_df = mrna_unip_df[mrna_unip_df$uniprotswissprot %in% prot_df$uniprotswissprot, ]
 
 dupl_mrna = mrna_unip_df$ensembl_transcript_id %>% 
   subset(., duplicated(.))
@@ -150,3 +161,52 @@ mrna_unip_df = mrna_unip_df %>%
   merge.data.frame(y = dupl_mrna, all = T)
 
 mrna_unip_df$n_protein_per_transcript[is.na(mrna_unip_df$n_protein_per_transcript)] = 1
+
+mrna_unip_df_ids = mrna_unip_df[, c(1, ncol(mrna_unip_df)-1, ncol(mrna_unip_df))]
+
+mrna_unip_df = mrna_unip_df[, -c(1, ncol(mrna_unip_df)-1, ncol(mrna_unip_df))] / mrna_unip_df_ids$n_protein_per_transcript
+mrna_unip_df = cbind.data.frame(mrna_unip_df, mrna_unip_df_ids)
+mrna_unip_df = mrna_unip_df[, -ncol(mrna_unip_df)]
+
+
+mrna_unip_df = mrna_unip_df %>% 
+  melt.data.frame()
+
+colnames(mrna_unip_df)[3:4] = c('sample_name', 'TPM_value')
+
+mrna_unip_df$sample_name = mrna_unip_df$sample_name %>% 
+  gsub(pattern = '5FU', replacement = 'X5FU') %>% 
+  gsub(pattern = 'con_DF2', replacement = 'DF2')
+
+mrna_unip_df = mrna_unip_df %>% 
+  dplyr::filter(!grepl(pattern = 'DAU', x = sample_name))
+
+mrna_unip_df$uniprot_sample = paste(mrna_unip_df$uniprotswissprot, mrna_unip_df$sample_name, sep = '--')
+
+all(prot_df$sample_name %in% mrna_unip_df$sample_name) %>% 
+  stopifnot('sample names different between transcrx and protx'= .)
+
+noprotsamples = unique(mrna_unip_df$sample_name)[!(unique(mrna_unip_df$sample_name) %in% unique(prot_df$sample_name))]
+warning(paste(paste0(noprotsamples, collapse = ', '), 'did not have proteomics samples, only transcriptomics'))
+mrna_unip_df = mrna_unip_df %>% 
+  dplyr::filter(!grepl(pattern = paste0(noprotsamples, collapse = '|'), sample_name))
+
+
+mrna_unip_df = mrna_unip_df[, 'TPM_value'] %>% 
+  aggregate.data.frame(by = list(uniprot_sample = mrna_unip_df$uniprot_sample), FUN = sum)
+
+colnames(mrna_unip_df)[2] = c('TPM_value_per_protein_and_sample')
+
+# Combine mRNA with proteins ----------------------------------------------
+
+mrna_prot_df = mrna_unip_df %>% 
+  merge.data.frame(y = prot_df, by = 'uniprot_sample', all.y = T)
+
+mrna_prot_df = mrna_prot_df %>% 
+  dplyr::select(!contains('.y'))
+
+colnames(mrna_prot_df) = colnames(mrna_prot_df) %>% 
+  gsub(pattern = '.x', replacement = '')
+
+mrna_prot_df = mrna_prot_df %>% 
+  dplyr::filter(!is.na(proteomics_value))
