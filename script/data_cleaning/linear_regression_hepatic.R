@@ -5,18 +5,38 @@ forceLibrary(c('dplyr', 'tibble', 'biomaRt', 'reshape', 'caret'))
 # Get mRNA data -----------------------------------------------------------
 
 mrna_dir = '/share/analysis/hecatos/juantxo/mRNA/quant_salmon/Homo_sapiens.GRCh38.cdna.ncrna.circbase/'
-tissue = 'cardiac'
+tissue = 'hepatic'
 compound = 't0_controls'
 
 mrna_dir_spe = paste0(mrna_dir, tissue, '/', compound)
 
-# mrna_df = mergeFiles(files_patt = 'quant.sf', by_col = 'Name', 
-#                      path = mrna_dir_spe, all_true = T, recursive = T, 
-#                      header = T)
-# 
-# saveRDS(object = mrna_df, file = 'data/salmon_cardiac.rds')
+mrna_df_file = paste0('data/salmon_', tissue, '.rds')
 
-mrna_df = readRDS(file = 'data/salmon_cardiac.rds')
+if (file.exists(mrna_df_file)) {
+  mrna_df = readRDS(file = mrna_df_file)
+} else {
+  mrna_df = mergeFiles(files_patt = 'quant.sf', by_col = 'Name',
+                       path = mrna_dir_spe, all_true = T, recursive = T,
+                       header = T)
+  
+  saveRDS(object = mrna_df, file = mrna_df_file)
+  
+}
+
+
+# Clean colnames and rownames ---------------------------------------------
+
+
+mrna_df_counts = mrna_df %>% 
+  remove_rownames() %>% 
+  column_to_rownames('Name') %>% 
+  dplyr::select(contains('NumReads'))
+
+colnames(mrna_df_counts) = colnames(mrna_df_counts) %>% 
+  gsub(pattern = paste0(mrna_dir_spe, '|', '/quant.sf|_quant|NumReads_', '|', '/'), replacement = '') 
+
+mrna_df_counts = mrna_df_counts %>% 
+  filterSamplesBySeqDepth()
 
 mrna_df = mrna_df %>% 
   remove_rownames() %>% 
@@ -24,23 +44,37 @@ mrna_df = mrna_df %>%
   dplyr::select(contains('TPM'))
 
 colnames(mrna_df) = colnames(mrna_df) %>% 
-  gsub(pattern = '/share/analysis/hecatos/juantxo/mRNA/quant_salmon/Homo_sapiens.GRCh38.cdna.ncrna.circbase/cardiac/t0_controls/', replacement = '') %>% 
-  gsub(pattern = '/quant.sf|_quant|TPM_', replacement = '')
+  gsub(pattern = mrna_dir_spe, replacement = '') %>% 
+  gsub(pattern = '/quant.sf|_quant|TPM_', replacement = '') %>% 
+  gsub(pattern = '/', replacement = '')
 
 
 rownames(mrna_df) = rownames(mrna_df) %>% 
   gsub('\\..*', '', .) 
 
-# mart = openMart2018()
-# 
-# mrna_prot_ids = getBM(attributes = c('ensembl_transcript_id', 'uniprotswissprot'),
-#                       filters = 'ensembl_transcript_id',
-#                       values = rownames(mrna_df),
-#                       mart = mart)
-# 
-# saveRDS(object = mrna_prot_ids, file = 'data/mrna_prot_ids.rds')
+stopifnot(all.equal(colnames(mrna_df), colnames(mrna_df_counts)))
 
-mrna_prot_ids = readRDS(file = 'data/mrna_prot_ids.rds')
+
+# Get protein IDs associated to transcripts -------------------------------
+
+
+
+mrna_prot_ids_file = paste0('data/mrna_prot_ids_', tissue, '.rds')
+
+if (file.exists(mrna_prot_ids_file)) {
+  mrna_prot_ids = readRDS(file = mrna_prot_ids_file)
+} else {
+  mart = openMart2018()
+  
+  mrna_prot_ids = getBM(attributes = c('ensembl_transcript_id', 'uniprotswissprot'),
+                        filters = 'ensembl_transcript_id',
+                        values = rownames(mrna_df),
+                        mart = mart)
+  
+  saveRDS(object = mrna_prot_ids, file = mrna_prot_ids_file)
+  
+}
+
 
 mrna_unip_df = mrna_df %>% 
   rownames_to_column('ensembl_transcript_id') %>% 
@@ -48,9 +82,9 @@ mrna_unip_df = mrna_df %>%
 
 # Get proteomics data -----------------------------------------------------
 
-prot_dir = '/ngs-data/data/hecatos/Cardiac/t0_controls/Protein/'
+Tissue = tools::toTitleCase(tissue)
 
-# source(file = 'script/data_cleaning/fix_ANT_proteomics_file.R')
+prot_dir = paste0('/ngs-data/data/hecatos/', Tissue, '/t0_controls/Protein/')
 
 prot_df = mergeFiles(by_col = 'Row.Names', path = prot_dir, header = T, 
                      fill = F, sep = '\t', all_true = T)
@@ -69,9 +103,9 @@ colnames(prot_df)[!grepl('log2', colnames(prot_df))] =
   colnames(prot_df)[!grepl('log2', colnames(prot_df))] %>% 
   paste0('_log2')
 
-# source(file = 'script/data_cleaning/renaming_proteomics_samples.R')
+source(file = 'script/data_cleaning/renaming_proteomics_samples.R')
 
-files_rocheid = readRDS('data/biostudies/cardiac/biostudies_cardiac.rds') %>% 
+files_rocheid = readRDS('data/biostudies/', tissue, '/biostudies_', tissue, '.rds') %>% 
   as.data.frame()
 
 files_rocheid$`Roche ID`[grep('AMI_.*_000', files_rocheid$Files)] = 

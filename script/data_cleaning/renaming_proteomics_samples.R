@@ -1,7 +1,7 @@
 source('script/functions/functions_JOA.R')
 forceLibrary(c('dplyr', 'tibble', 'biomaRt', 'readxl'))
 
-biost_dir = 'data/biostudies/cardiac/'
+biost_dir = paste0('data/biostudies/', tissue, '/')
 xl_files = list.files(path = biost_dir, full.names = T)
 
 biost_df = data.frame()
