@@ -18,7 +18,9 @@ for (xl_file in xl_files) {
   }
   
   biostudies_xl$Files = biostudies_xl$Files %>% 
-    gsub(pattern = 'Total_RNA/Cardiac/.*/.*/|_R.*', replacement = '')
+    gsub(pattern = paste0('Total_RNA/', Tissue, '/.*/.*/|_R.*'), replacement = '')
+  
+  stopifnot(!any(grepl('Total', biostudies_xl$Files)))
   
   biostudies_xl = biostudies_xl %>% 
     unique()
@@ -31,4 +33,4 @@ biost_df = biost_df %>%
   na.omit() %>% 
   filter(grepl('_', Files))
 
-saveRDS(object = biost_df, file = 'data/biostudies/cardiac/biostudies_cardiac.rds')
+saveRDS(object = biost_df, file = paste0('data/biostudies/', tissue, '/biostudies_', tissue, '.rds'))

@@ -89,6 +89,10 @@ prot_dir = paste0('/ngs-data/data/hecatos/', Tissue, '/t0_controls/Protein/')
 prot_df = mergeFiles(by_col = 'Row.Names', path = prot_dir, header = T, 
                      fill = F, sep = '\t', all_true = T)
 
+
+# Clean rownames and colnames of proteomics data --------------------------
+
+
 colnames(prot_df) = colnames(prot_df) %>% 
   gsub(pattern = paste0(prot_dir), replacement = '')
 
@@ -103,18 +107,23 @@ colnames(prot_df)[!grepl('log2', colnames(prot_df))] =
   colnames(prot_df)[!grepl('log2', colnames(prot_df))] %>% 
   paste0('_log2')
 
-source(file = 'script/data_cleaning/renaming_proteomics_samples.R')
+if (!file.exists(paste0('data/biostudies/', tissue, '/biostudies_', tissue, '.rds'))) {
+  source(file = 'script/data_cleaning/renaming_proteomics_samples.R')
+}
 
-files_rocheid = readRDS('data/biostudies/', tissue, '/biostudies_', tissue, '.rds') %>% 
+files_rocheid = readRDS(paste0('data/biostudies/', tissue, '/biostudies_', tissue, '.rds')) %>% 
   as.data.frame()
 
-files_rocheid$`Roche ID`[grep('AMI_.*_000', files_rocheid$Files)] = 
-  files_rocheid$`Roche ID`[grep('AMI_.*_000', files_rocheid$Files)] %>% 
-  paste0('_e1')
+if (tissue == 'cardiac') {
+  files_rocheid$`Roche ID`[grep('AMI_.*_000', files_rocheid$Files)] = 
+    files_rocheid$`Roche ID`[grep('AMI_.*_000', files_rocheid$Files)] %>% 
+    paste0('_e1')
+  
+  files_rocheid$`Roche ID`[grep('DOC_.*_000', files_rocheid$Files)] = 
+    files_rocheid$`Roche ID`[grep('DOC_.*_000', files_rocheid$Files)] %>% 
+    paste0('_e2')
+}
 
-files_rocheid$`Roche ID`[grep('DOC_.*_000', files_rocheid$Files)] = 
-  files_rocheid$`Roche ID`[grep('DOC_.*_000', files_rocheid$Files)] %>% 
-  paste0('_e2')
 
 files_rocheid$colnum = files_rocheid$`Roche ID` %>% 
   paste0('_', ., '_') %>% 
