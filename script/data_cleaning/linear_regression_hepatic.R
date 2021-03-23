@@ -126,7 +126,7 @@ if (tissue == 'cardiac') {
 
 
 files_rocheid$colnum = files_rocheid$`Roche ID` %>% 
-  paste0('_', ., '_') %>% 
+  paste0('_', .) %>% 
   as.data.frame() %>% 
   apply(MARGIN = 1, FUN = grep, colnames(prot_df)) 
 
@@ -142,6 +142,15 @@ files_rocheid$colnum[files_rocheid$len == 0] =
 files_rocheid$len = files_rocheid$colnum %>% 
   sapply(length)
 
+files_rocheid$colnum[files_rocheid$len == 0] = 
+  files_rocheid$`Roche ID`[files_rocheid$len == 0] %>% 
+  paste0('_', ., '_') %>% 
+  as.data.frame() %>% 
+  apply(MARGIN = 1, FUN = grep, colnames(prot_df)) 
+
+files_rocheid$len = files_rocheid$colnum %>% 
+  sapply(length)
+
 
 files_rocheid = files_rocheid[files_rocheid$len != 0, ]
 
@@ -151,6 +160,9 @@ colnames(prot_df) =
   colnames(prot_df) %>% 
   gsub(pattern = '_/.*', 
        replacement = '')
+
+# Subselect samples -------------------------------------------------------
+
 
 t0_cols = 
   colnames(prot_df) %>% 
