@@ -6,6 +6,8 @@ xl_files = list.files(path = biost_dir, full.names = T)
 
 biost_df = data.frame()
 
+
+
 for (xl_file in xl_files) {
   biostudies_xl <- read_excel(xl_file, 
                               skip = 20) %>% 
@@ -33,4 +35,57 @@ biost_df = biost_df %>%
   na.omit() %>% 
   filter(grepl('_', Files))
 
-saveRDS(object = biost_df, file = paste0('data/biostudies/', tissue, '/biostudies_', tissue, '.rds'))
+files_rocheid = biost_df
+
+if (tissue == 'hepatic') {
+  files_rocheid = files_rocheid %>% 
+    dplyr::filter(!grepl('CYC_Tox_000.*', Files))
+}
+
+if (tissue == 'cardiac') {
+  files_rocheid$`Roche ID`[grep('AMI_.*_000', files_rocheid$Files)] = 
+    files_rocheid$`Roche ID`[grep('AMI_.*_000', files_rocheid$Files)] %>% 
+    paste0('_e1')
+  
+  files_rocheid$`Roche ID`[grep('DOC_.*_000', files_rocheid$Files)] = 
+    files_rocheid$`Roche ID`[grep('DOC_.*_000', files_rocheid$Files)] %>% 
+    paste0('_e2')
+}
+
+
+files_rocheid$colnum = files_rocheid$`Roche ID` %>% 
+  paste0('_', .) %>% 
+  as.data.frame() %>% 
+  apply(MARGIN = 1, FUN = grep, colnames(prot_df)) 
+
+files_rocheid$len = files_rocheid$colnum %>% 
+  sapply(length)
+
+files_rocheid$colnum[files_rocheid$len == 0] = 
+  files_rocheid$`Roche ID`[files_rocheid$len == 0] %>% 
+  paste0('_0', ., '_') %>% 
+  as.data.frame() %>% 
+  apply(MARGIN = 1, FUN = grep, colnames(prot_df)) 
+
+files_rocheid$len = files_rocheid$colnum %>% 
+  sapply(length)
+
+files_rocheid$colnum[files_rocheid$len == 0] = 
+  files_rocheid$`Roche ID`[files_rocheid$len == 0] %>% 
+  paste0('_', ., '_') %>% 
+  as.data.frame() %>% 
+  apply(MARGIN = 1, FUN = grep, colnames(prot_df)) 
+
+files_rocheid$len = files_rocheid$colnum %>% 
+  sapply(length)
+
+colnum_dupl = files_rocheid$colnum %>% duplicated %>% files_rocheid$colnum[.]
+
+stopifnot(length(colnum_dupl) == 0)
+
+# files_rocheid[files_rocheid$colnum %in% colnum_dupl, ]
+
+files_rocheid = files_rocheid[files_rocheid$len != 0, ]
+
+
+saveRDS(object = files_rocheid, file = paste0('data/biostudies/', tissue, '/biostudies_', tissue, '.rds'))
