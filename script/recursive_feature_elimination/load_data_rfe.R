@@ -14,9 +14,9 @@ Y = mrna_prot_df[, grep('proteomics', colnames(mrna_prot_df))]
 normalization <- preProcess(X, verbose = T)
 X <- predict(normalization, X) %>% 
   as.data.frame() %>% 
-  .[, -2, F] # including the strand column gives always an error, independently of the algorithm used
+  dplyr::select(!contains('strand')) # including the strand column gives always an error, independently of the algorithm used
 
-sizes = seq(1, ncol(X), ncol(X)/5) %>% as.integer()
+sizes = seq(1, ncol(X), (ncol(X)-1)/5) %>% as.integer()
 
 if (!dir.exists('output/rfe')) {
   dir.create('output/rfe', recursive = T)
