@@ -102,3 +102,25 @@ saveRDS(mirna_feats, 'data/miRNA/mirna_feats.rds')
 
 mirna_feats_melt = mirna_feats %>% 
   melt()
+
+mirna_feats_melt = mirna_feats_melt[mirna_feats_melt$uniprotswissprot != '', , F]
+mirna_feats_melt$measure = NA
+mirna_feats_melt$measure[grepl('mean', mirna_feats_melt$variable)] = 'mean'
+mirna_feats_melt$measure[grepl('median', mirna_feats_melt$variable)] = 'median'
+mirna_feats_melt$measure[grepl('min', mirna_feats_melt$variable)] = 'min'
+mirna_feats_melt$measure[grepl('max', mirna_feats_melt$variable)] = 'max'
+mirna_feats_melt$measure[grepl('sum', mirna_feats_melt$variable)] = 'sum'
+mirna_feats_melt$measure[grepl('sd', mirna_feats_melt$variable)] = 'sd'
+mirna_feats_melt$measure = mirna_feats_melt$measure %>% 
+  paste0('mirna_', .)
+
+mirna_feats_melt$sample = mirna_feats_melt$variable %>% 
+  gsub(pattern = '_mean|_median|_min|_max|_sum|_sd', replacement = '')
+
+mirna_feats_melt$uniprot_sample = paste0(mirna_feats_melt$uniprotswissprot, '--', mirna_feats_melt$sample)
+
+mirna_feats_unmelt = mirna_feats_melt %>% 
+  dplyr::select(-c(uniprotswissprot, variable, sample)) %>% 
+  dcast(uniprot_sample ~ measure) 
+
+saveRDS(mirna_feats_unmelt, 'data/miRNA/mirna_feats_unmelt.rds')
