@@ -33,33 +33,34 @@ generate_new_sizes <- function(bestSubset, ncol_X, sizes) {
   
 }
 
-besub = 0
-besubs = NULL
-optimum = F
-
-while (optimum == F) {
-  
-
+# besub = 0
+# besubs = NULL
+# optimum = F
+# 
+# while (optimum == F) {
+#   
+# 
 rfProfile <- rfe(X, Y,
                  sizes = sizes,
                  rfeControl = rfeControl(functions = rfFuncs,
                                          verbose = F,
                                          allowParallel = T))
-besub_n = rfProfile$bestSubset
-if (besub == besub_n) {
-  optimum = T
-} else {
-  besub = besub_n
-  besubs = c(besubs, besub)
-}
-
-sizes = generate_new_sizes(bestSubset = besub_n,
-                           ncol_X = ncol(X),
-                           sizes = sizes)
-
-print(besubs)
-print(sizes)
-
-}
+# besub_n = rfProfile$bestSubset
+# if (besub == besub_n) {
+#   optimum = T
+# } else {
+#   besub = besub_n
+#   besubs = c(besubs, besub)
+# }
+# 
+# sizes = generate_new_sizes(bestSubset = besub_n,
+#                            ncol_X = ncol(X),
+#                            sizes = sizes)
+# 
+# print(besubs)
+# print(sizes)
+# 
+# }
 
 saveRDS(rfProfile, 'output/rfe/rfProfile.rds')
+stopCluster(cl)

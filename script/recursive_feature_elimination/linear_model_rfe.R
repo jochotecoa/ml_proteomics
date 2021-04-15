@@ -41,28 +41,28 @@ besub = 0
 besubs = NULL
 optimum = F
 
-while (optimum == F) {
+# while (optimum == F) {
   lmProfile <- rfe(X, Y,
                    sizes = sizes,
                    rfeControl = rfeControl(functions = lmFuncs,
                                            verbose = F,
                                            allowParallel = T))
-  besub_n = lmProfile$bestSubset
-  if (besub == besub_n) {
-    optimum = T
-  } else {
-    besub = besub_n
-    besubs = c(besubs, besub)
-  }
-
-  sizes = generate_new_sizes(bestSubset = besub_n,
-                             ncol_X = ncol(X),
-                             sizes = sizes)
-
-  print(besubs)
-  print(sizes)
-
-}
+#   besub_n = lmProfile$bestSubset
+#   if (besub == besub_n) {
+#     optimum = T
+#   } else {
+#     besub = besub_n
+#     besubs = c(besubs, besub)
+#   }
+# 
+#   sizes = generate_new_sizes(bestSubset = besub_n,
+#                              ncol_X = ncol(X),
+#                              sizes = sizes)
+# 
+#   print(besubs)
+#   print(sizes)
+# 
+# }
 
   saveRDS(lmProfile, 'output/rfe/lmProfile.rds')
 
@@ -71,11 +71,11 @@ while (optimum == F) {
 
   source('script/recursive_feature_elimination/load_data_rfe.R')
   
-  besub = 0
-  besubs = NULL
-  optimum = F
-  
-  while (optimum == F) {
+  # besub = 0
+  # besubs = NULL
+  # optimum = F
+  # 
+  # while (optimum == F) {
     
     lmProfile2 <- rfe(X, Y,
                       sizes = sizes,
@@ -83,20 +83,21 @@ while (optimum == F) {
                                               rerank = TRUE, 
                                               verbose = F, 
                                               allowParallel = T))
-    besub_n = lmProfile2$bestSubset
-    if (besub == besub_n) {
-      optimum = T
-    } else {
-      besub = besub_n
-      besubs = c(besubs, besub)
-    }
-    
-    sizes = generate_new_sizes(bestSubset = besub_n, 
-                               ncol_X = ncol(X), 
-                               sizes = sizes)
-    
-    print(besubs)
-    print(sizes)
-  }
+  #   besub_n = lmProfile2$bestSubset
+  #   if (besub == besub_n) {
+  #     optimum = T
+  #   } else {
+  #     besub = besub_n
+  #     besubs = c(besubs, besub)
+  #   }
+  #   
+  #   sizes = generate_new_sizes(bestSubset = besub_n, 
+  #                              ncol_X = ncol(X), 
+  #                              sizes = sizes)
+  #   
+  #   print(besubs)
+  #   print(sizes)
+  # }
   
   saveRDS(lmProfile2, 'output/rfe/lmProfile2.rds')
+  stopCluster(cl)

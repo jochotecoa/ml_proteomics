@@ -313,7 +313,7 @@ mrna_prot_df$strand = mrna_prot_df$strand %>% as.factor()
 mrna_prot_df$noncds_length = mrna_prot_df$transcript_length - mrna_prot_df$cds_length
 mrna_prot_df$proportion_noncds_length = mrna_prot_df$noncds_length / mrna_prot_df$transcript_length
 
-
+saveRDS(object = mrna_prot_df, file = 'data/whole_raw_dataset.rds')
 
 # Pre-processing ----------------------------------------------------------
 # Zero- and Near Zero-Variance Predictors

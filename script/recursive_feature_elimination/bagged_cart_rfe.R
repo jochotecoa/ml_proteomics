@@ -7,5 +7,6 @@ forceLibrary(c('ipred', 'plyr', 'e1071')) # Needed for bagged trees
                     sizes = sizes,
                     rfeControl = rfeControl(functions = treebagFuncs,
                                             verbose = T,
-                                            allowParallel = T, number = 1))
+                                            allowParallel = T))
   saveRDS(bagProfile, 'output/rfe/bagProfile.rds')
+  stopCluster(cl)

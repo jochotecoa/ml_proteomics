@@ -34,7 +34,7 @@ if (file.exists('output/rfe/svmProfile.rds')) {
 
 png('output/xyplot_rfe.png')
 xyplot(lmProfile$results$RMSE + lmProfile2$results$RMSE + rfProfile$results$RMSE + bagProfile$results$RMSE + svmProfile$results$RMSE ~
-         rfProfile$results$Variables, xlab = 'Number of Variables', ylab = 'Root-mean-square deviation (RMSE)',
+         svmProfile$results$Variables, xlab = 'Number of Variables', ylab = 'Root-mean-square deviation (RMSE)',
        type = c("g", "p", "l"),
        auto.key = TRUE)
 dev.off()
