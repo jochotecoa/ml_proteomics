@@ -4,7 +4,9 @@ forceLibrary('kernlab')
 
   svmProfile <- rfe(X, Y,
                     sizes = sizes,
-                    rfeControl = rfeControl(functions = caretFuncs, verbose = T),
+                    rfeControl = rfeControl(functions = caretFuncs, 
+                                            verbose = T, 
+                                            method = 'repeatedcv'),
                     ## pass options to train()
                     method = "svmRadial")
   saveRDS(svmProfile, '../output/rfe/svmProfile.rds')

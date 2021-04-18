@@ -37,16 +37,16 @@ generate_new_sizes <- function(bestSubset, ncol_X, sizes) {
   #                  sizes = 1:ncol(mtcars),
   #                  rfeControl = rfeControl(functions = lmFuncs, verbose = T))
   
-besub = 0
-besubs = NULL
-optimum = F
+# besub = 0
+# besubs = NULL
+# optimum = F
 
 # while (optimum == F) {
   lmProfile <- rfe(X, Y,
                    sizes = sizes,
                    rfeControl = rfeControl(functions = lmFuncs,
                                            verbose = F,
-                                           allowParallel = T))
+                                           method = 'repeatedcv'))
 #   besub_n = lmProfile$bestSubset
 #   if (besub == besub_n) {
 #     optimum = T
@@ -64,7 +64,7 @@ optimum = F
 # 
 # }
 
-  saveRDS(lmProfile, 'output/rfe/lmProfile.rds')
+  saveRDS(lmProfile, '../output_rfe/lmProfile.rds')
 
 # With rerank -------------------------------------------------------------
 
@@ -81,8 +81,8 @@ optimum = F
                       sizes = sizes,
                       rfeControl = rfeControl(functions = lmFuncs,
                                               rerank = TRUE, 
-                                              verbose = F, 
-                                              allowParallel = T))
+                                              method = 'repeatedcv',
+                                              verbose = F))
   #   besub_n = lmProfile2$bestSubset
   #   if (besub == besub_n) {
   #     optimum = T
@@ -99,5 +99,5 @@ optimum = F
   #   print(sizes)
   # }
   
-  saveRDS(lmProfile2, 'output/rfe/lmProfile2.rds')
+  saveRDS(lmProfile2, '../output_rfe/lmProfile2.rds')
   stopCluster(cl)
