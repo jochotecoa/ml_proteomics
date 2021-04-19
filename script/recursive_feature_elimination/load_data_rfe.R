@@ -7,8 +7,10 @@ registerDoParallel(cl)
 # load the data
 
 
-X = readRDS('data/training_data_preds.rds')
-Y = readRDS('data/training_data_target.rds')
+X = readRDS('data/training_data_preds.rds') %>% 
+  dplyr::select(!contains('strand'))
+Y = readRDS('data/training_data_target.rds') %>% 
+  unlist()
 
   # dplyr::select(!contains('strand')) # including the strand column gives always an error, independently of the algorithm used
 

@@ -46,7 +46,8 @@ generate_new_sizes <- function(bestSubset, ncol_X, sizes) {
                    sizes = sizes,
                    rfeControl = rfeControl(functions = lmFuncs,
                                            verbose = F,
-                                           method = 'repeatedcv'))
+                                           method = 'repeatedcv', 
+                                           allowParallel = T))
 #   besub_n = lmProfile$bestSubset
 #   if (besub == besub_n) {
 #     optimum = T
@@ -101,3 +102,4 @@ generate_new_sizes <- function(bestSubset, ncol_X, sizes) {
   
   saveRDS(lmProfile2, '../output_rfe/lmProfile2.rds')
   stopCluster(cl)
+  
