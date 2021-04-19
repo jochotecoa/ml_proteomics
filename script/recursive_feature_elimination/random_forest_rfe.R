@@ -45,7 +45,7 @@ sizes = as.integer(seq(2, ncol(X), (ncol(X)-2)/4))[-5]
 rfProfile <- rfe(X, Y,
                  sizes = sizes,
                  rfeControl = rfeControl(functions = rfFuncs,
-                                         verbose = F,
+                                         verbose = T,
                                          allowParallel = T,
                                          method = 'repeatedcv'))
 # besub_n = rfProfile$bestSubset
