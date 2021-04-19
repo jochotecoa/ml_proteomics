@@ -1,4 +1,4 @@
-forceLibrary <- function(list.of.packages) {
+forceLibrary <- function(list.of.packages, ...) {
   checkNewPackages <- function(list.of.packages) {
     new.packages.log = !(list.of.packages %in% installed.packages()[,"Package"])
     new.packages <- list.of.packages[new.packages.log]
@@ -7,13 +7,13 @@ forceLibrary <- function(list.of.packages) {
   new.packages = checkNewPackages(list.of.packages)
   if (length(new.packages)) {
     print(paste('Trying to install the following packages:', paste(new.packages)))
-    install.packages(new.packages)
+    install.packages(new.packages, ...)
     new.packages = checkNewPackages(list.of.packages)
     if (length(new.packages)) {
       print(paste(paste(new.packages), 'were not installed through the easy way'))
       print("Let's try the hard way then")
       setRepositories(graphics = F, ind = 1:8)
-      install.packages(new.packages)
+      install.packages(new.packages, ...)
       new.packages = checkNewPackages(list.of.packages)
       if (length(new.packages)) {
         stop('forceLibrary was not able to install the following packages: ', 

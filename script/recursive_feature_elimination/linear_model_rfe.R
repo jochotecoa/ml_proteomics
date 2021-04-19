@@ -40,12 +40,12 @@ generate_new_sizes <- function(bestSubset, ncol_X, sizes) {
 # besub = 0
 # besubs = NULL
 # optimum = F
-
+sizes = as.integer(c(seq(2, .36*ncol(X), 1), seq((.36*ncol(X))+5, ncol(X)-5, 5)))
 # while (optimum == F) {
   lmProfile <- rfe(X, Y,
                    sizes = sizes,
                    rfeControl = rfeControl(functions = lmFuncs,
-                                           verbose = F,
+                                           verbose = T,
                                            method = 'repeatedcv', 
                                            allowParallel = T))
 #   besub_n = lmProfile$bestSubset
@@ -70,7 +70,7 @@ generate_new_sizes <- function(bestSubset, ncol_X, sizes) {
 # With rerank -------------------------------------------------------------
 
 
-  source('script/recursive_feature_elimination/load_data_rfe.R')
+  # source('script/recursive_feature_elimination/load_data_rfe.R')
   
   # besub = 0
   # besubs = NULL
@@ -78,12 +78,12 @@ generate_new_sizes <- function(bestSubset, ncol_X, sizes) {
   # 
   # while (optimum == F) {
     
-    lmProfile2 <- rfe(X, Y,
-                      sizes = sizes,
-                      rfeControl = rfeControl(functions = lmFuncs,
-                                              rerank = TRUE, 
-                                              method = 'repeatedcv',
-                                              verbose = F))
+    # lmProfile2 <- rfe(X, Y,
+    #                   sizes = sizes,
+    #                   rfeControl = rfeControl(functions = lmFuncs,
+    #                                           rerank = TRUE, 
+    #                                           method = 'repeatedcv',
+    #                                           verbose = F))
   #   besub_n = lmProfile2$bestSubset
   #   if (besub == besub_n) {
   #     optimum = T
@@ -100,6 +100,6 @@ generate_new_sizes <- function(bestSubset, ncol_X, sizes) {
   #   print(sizes)
   # }
   
-  saveRDS(lmProfile2, '../output_rfe/lmProfile2.rds')
+  # saveRDS(lmProfile2, '../output_rfe/lmProfile2.rds')
   stopCluster(cl)
   

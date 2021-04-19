@@ -33,6 +33,8 @@ generate_new_sizes <- function(bestSubset, ncol_X, sizes) {
   
 }
 
+sizes = as.integer(seq(2, ncol(X), (ncol(X)-2)/4))[-5]
+
 # besub = 0
 # besubs = NULL
 # optimum = F
@@ -44,7 +46,8 @@ rfProfile <- rfe(X, Y,
                  sizes = sizes,
                  rfeControl = rfeControl(functions = rfFuncs,
                                          verbose = F,
-                                         allowParallel = T))
+                                         allowParallel = T,
+                                         method = 'repeatedcv'))
 # besub_n = rfProfile$bestSubset
 # if (besub == besub_n) {
 #   optimum = T

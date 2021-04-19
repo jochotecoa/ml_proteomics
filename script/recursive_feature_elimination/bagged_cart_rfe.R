@@ -2,11 +2,13 @@ source('script/recursive_feature_elimination/load_data_rfe.R')
 
 forceLibrary(c('ipred', 'plyr', 'e1071')) # Needed for bagged trees
 
-  
+sizes = as.integer(seq(2, ncol(X), (ncol(X)-2)/4))[-5]
+
   bagProfile <- rfe(X, Y,
                     sizes = sizes,
                     rfeControl = rfeControl(functions = treebagFuncs,
                                             verbose = T,
-                                            allowParallel = T))
+                                            allowParallel = T, 
+                                            method = 'repeatedcv'))
   saveRDS(bagProfile, '../output_rfe/bagProfile.rds')
   stopCluster(cl)
