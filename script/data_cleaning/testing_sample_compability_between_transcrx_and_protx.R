@@ -59,8 +59,16 @@ mrna_unip_df_sum[mrna_unip_df_sum == -Inf] = log2(2e-06)
 
 mrna_unip_df_ids = mrna_unip_df[, c('uniprot_sample', 'uniprotswissprot')] %>% unique()
 
-mrna_unip_df_median = mrna_unip_df[, c('uniprotswissprot', 'strand', 'transcript_length', 'percentage_gene_gc_content', 'cds_length')] %>% 
-  addVarsProt(fnc_list = c('mean', 'median', 'min', 'max', 'sum', 'sd'), by_str = 'uniprotswissprot')
+mrna_unip_df$noncds_length = mrna_unip_df$transcript_length - mrna_unip_df$cds_length
+mrna_unip_df$proportion_noncds_length = mrna_unip_df$noncds_length / mrna_unip_df$transcript_length
+
+mrna_unip_df_median = mrna_unip_df[, c('uniprotswissprot', 'strand', 
+                                       'transcript_length', 
+                                       'percentage_gene_gc_content', 
+                                       'cds_length', 'noncds_length', 
+                                       'proportion_noncds_length')] %>% 
+  addVarsProt(fnc_list = c('mean', 'median', 'min', 'max', 'sum', 'sd'), 
+              by_str = 'uniprotswissprot')
 
 mrna_unip_df = merge.data.frame(mrna_unip_df_ids, mrna_unip_df_sum, 'uniprot_sample')
 mrna_unip_df = merge.data.frame(mrna_unip_df, mrna_unip_df_median, 'uniprotswissprot')

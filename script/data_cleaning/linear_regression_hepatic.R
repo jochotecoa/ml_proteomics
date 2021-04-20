@@ -88,107 +88,98 @@ saveRDS(object = X, file = 'data/training_data_preds.rds')
 saveRDS(object = Y, file = 'data/training_data_target.rds')
 
 # 
-
-trainIndex = createDataPartition(mrna_prot_df$proteomics_value, p=.8, list=F, 
-                                 times = 1)
-
-protTrain <- mrna_prot_df[ trainIndex,]
-protTest  <- mrna_prot_df[-trainIndex,]
-
-# Model building ----------------------------------------------------------
-# [1] "Linear Regression (lm)"                                             "eXtreme Gradient Boosting (xgbDART)"                               
-# [3] "Quantile Random Forest (qrf)"                                       "Relevance Vector Machines with Linear Kernel (rvmLinear)"          
-# [5] "Partial Least Squares (pls)"                                        "Bayesian Regularized Neural Networks (brnn)"                       
-# [7] "glmnet (glmnet)"                                                    "Adaptive-Network-Based Fuzzy Inference System (ANFIS)"             
-# [9] "Gaussian Process with Radial Basis Function Kernel (gaussprRadial)" "Linear Regression with Stepwise Selection (lmStepAIC)"             
-# [11] "Robust Linear Model (rlm)"                                         
-
-
-library(caret)# Simple linear regression model (lm means linear model)
-
-
-fitControl <- trainControl(method = "repeatedcv",   
-                           number = 10,     # number of folds
-                           repeats = 3, 
-                           search = "random", 
-                           allowParallel= T)    # repeated ten times
-
-methods_caret = c('lm', 'xgbDART', 'qrf', 'rvmLinear', 'pls', 'brnn', 'glmnet', 'ANFIS', 'gaussprRadial', 'lmStepAIC', 'rlm')
-
-models_list = list()
-
-for (method_caret in methods_caret) {
-  model <- train(proteomics_value ~ .,
-                 data = mrna_prot_df,
-                 method = method_caret, 
-                 trControl = fitControl, 
-                 preProcess = c('scale', 'center'), 
-                 tuneLength = 10)
-  
-  models_list$new = model
-  names(models_list)[length(models_list)] = method_caret
-  
-}
-
-model_lm <- train(proteomics_value ~ log2_TPM_value,
-               data = mrna_prot_df,
-               method = "lm", 
-               trControl = fitControl, 
-               preProcess = c('scale', 'center'))
-
-model_mlm <- train(proteomics_value ~ .,
-                   data = mrna_prot_df,
-                   method = "lm",
-                   trControl = fitControl, preProcess = c('scale', 'center'))
-
-
-# possible values: boot", "boot632", "cv", "repeatedcv", "LOOCV", "LGOCV"
-
-model_lasso <- train(proteomics_value ~ .,
-                  data = mrna_prot_df,
-                  method = "lasso",  # now we're using the lasso method
-                  trControl = fitControl, preProcess = c('scale', 'center'))
-
-
-# Multiple linear regression model
-
-
-# Ridge regression model
-model_ridge <- train(proteomics_value ~ .,
-               data = mrna_prot_df,
-               method = "ridge", # Try using "lasso"
-               trControl = fitControl, preProcess = c('scale', 'center'))
-
-
-resamps <- resamples(list(LM = model_lm,
-                          MLM = model_mlm,
-                          LSS = model_lasso,
-                          RDG = model_ridge))
-
-theme1 <- trellis.par.get()
-theme1$plot.symbol$col = rgb(.2, .2, .2, .4)
-theme1$plot.symbol$pch = 16
-theme1$plot.line$col = rgb(1, 0, 0, .7)
-theme1$plot.line$lwd <- 2
-trellis.par.set(theme1)
-bwplot(resamps, layout = c(4, 1))
-
-summary(model_lm)$sigm
-min(model_lasso$results$RMSE)
-summary(model_mlm)$sigma
-min(model_ridge$results$RMSE)
-
-rmse_matrix = cbind(
-  rmse_matrix, 
-  c(
-    summary(model_lm)$sigma,
-    min(model_lasso$results$RMSE),
-    summary(model_mlm)$sigma,
-    min(model_ridge$results$RMSE)
-  )
-)
-
-# rmse_matrix = matrix(
+# 
+# trainIndex = createDataPartition(mrna_prot_df$proteomics_value, p=.8, list=F, 
+#                                  times = 1)
+# 
+# protTrain <- mrna_prot_df[ trainIndex,]
+# protTest  <- mrna_prot_df[-trainIndex,]
+# 
+# # Model building ----------------------------------------------------------
+# # [1] "Linear Regression (lm)"                                             "eXtreme Gradient Boosting (xgbDART)"                               
+# # [3] "Quantile Random Forest (qrf)"                                       "Relevance Vector Machines with Linear Kernel (rvmLinear)"          
+# # [5] "Partial Least Squares (pls)"                                        "Bayesian Regularized Neural Networks (brnn)"                       
+# # [7] "glmnet (glmnet)"                                                    "Adaptive-Network-Based Fuzzy Inference System (ANFIS)"             
+# # [9] "Gaussian Process with Radial Basis Function Kernel (gaussprRadial)" "Linear Regression with Stepwise Selection (lmStepAIC)"             
+# # [11] "Robust Linear Model (rlm)"                                         
+# 
+# 
+# library(caret)# Simple linear regression model (lm means linear model)
+# 
+# 
+# fitControl <- trainControl(method = "repeatedcv",   
+#                            number = 10,     # number of folds
+#                            repeats = 3, 
+#                            search = "random", 
+#                            allowParallel= T)    # repeated ten times
+# 
+# methods_caret = c('lm', 'xgbDART', 'qrf', 'rvmLinear', 'pls', 'brnn', 'glmnet', 'ANFIS', 'gaussprRadial', 'lmStepAIC', 'rlm')
+# 
+# models_list = list()
+# 
+# for (method_caret in methods_caret) {
+#   model <- train(proteomics_value ~ .,
+#                  data = mrna_prot_df,
+#                  method = method_caret, 
+#                  trControl = fitControl, 
+#                  preProcess = c('scale', 'center'), 
+#                  tuneLength = 10)
+#   
+#   models_list$new = model
+#   names(models_list)[length(models_list)] = method_caret
+#   
+# }
+# 
+# model_lm <- train(proteomics_value ~ log2_TPM_value,
+#                data = mrna_prot_df,
+#                method = "lm", 
+#                trControl = fitControl, 
+#                preProcess = c('scale', 'center'))
+# 
+# model_mlm <- train(proteomics_value ~ .,
+#                    data = mrna_prot_df,
+#                    method = "lm",
+#                    trControl = fitControl, preProcess = c('scale', 'center'))
+# 
+# 
+# # possible values: boot", "boot632", "cv", "repeatedcv", "LOOCV", "LGOCV"
+# 
+# model_lasso <- train(proteomics_value ~ .,
+#                   data = mrna_prot_df,
+#                   method = "lasso",  # now we're using the lasso method
+#                   trControl = fitControl, preProcess = c('scale', 'center'))
+# 
+# 
+# # Multiple linear regression model
+# 
+# 
+# # Ridge regression model
+# model_ridge <- train(proteomics_value ~ .,
+#                data = mrna_prot_df,
+#                method = "ridge", # Try using "lasso"
+#                trControl = fitControl, preProcess = c('scale', 'center'))
+# 
+# 
+# resamps <- resamples(list(LM = model_lm,
+#                           MLM = model_mlm,
+#                           LSS = model_lasso,
+#                           RDG = model_ridge))
+# 
+# theme1 <- trellis.par.get()
+# theme1$plot.symbol$col = rgb(.2, .2, .2, .4)
+# theme1$plot.symbol$pch = 16
+# theme1$plot.line$col = rgb(1, 0, 0, .7)
+# theme1$plot.line$lwd <- 2
+# trellis.par.set(theme1)
+# bwplot(resamps, layout = c(4, 1))
+# 
+# summary(model_lm)$sigm
+# min(model_lasso$results$RMSE)
+# summary(model_mlm)$sigma
+# min(model_ridge$results$RMSE)
+# 
+# rmse_matrix = cbind(
+#   rmse_matrix, 
 #   c(
 #     summary(model_lm)$sigma,
 #     min(model_lasso$results$RMSE),
@@ -196,9 +187,18 @@ rmse_matrix = cbind(
 #     min(model_ridge$results$RMSE)
 #   )
 # )
-
-# rownames(rmse_matrix) = c('linear', 'lasso', 'multiple linear', 'ridge')
-# barplot(t(rmse_matrix)) 
-
-ggplot(rmse_matrix %>% t %>% melt, aes(x = X1, y = value, col = X2)) +           # Draw line plot with ggplot2
-  geom_line()
+# 
+# # rmse_matrix = matrix(
+# #   c(
+# #     summary(model_lm)$sigma,
+# #     min(model_lasso$results$RMSE),
+# #     summary(model_mlm)$sigma,
+# #     min(model_ridge$results$RMSE)
+# #   )
+# # )
+# 
+# # rownames(rmse_matrix) = c('linear', 'lasso', 'multiple linear', 'ridge')
+# # barplot(t(rmse_matrix)) 
+# 
+# ggplot(rmse_matrix %>% t %>% melt, aes(x = X1, y = value, col = X2)) +           # Draw line plot with ggplot2
+#   geom_line()
