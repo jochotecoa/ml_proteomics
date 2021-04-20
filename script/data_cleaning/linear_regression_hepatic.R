@@ -12,11 +12,11 @@ source('script/data_cleaning/transcript_expression_per_protein.R')
 
 source('script/data_cleaning/testing_sample_compability_between_transcrx_and_protx.R')
 
-if (file.exists('data/whole_raw_dataset.rds')) {
-  mrna_prot_df = readRDS('data/whole_raw_dataset.rds')
-} else {
+# if (file.exists('data/whole_raw_dataset.rds')) {
+#   mrna_prot_df = readRDS('data/whole_raw_dataset.rds')
+# } else {
   source('script/data_cleaning/combine_transcrx_with_protx.R')
-}
+# }
 
 source('script/data_cleaning/combine_mirna_with_protx.R')
 
