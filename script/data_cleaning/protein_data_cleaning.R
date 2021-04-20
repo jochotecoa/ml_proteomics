@@ -7,6 +7,10 @@ prot_dir = paste0('/ngs-data/data/hecatos/', Tissue, '/t0_controls/Protein/')
 prot_df = mergeFiles(by_col = 'Row.Names', path = prot_dir, header = T, 
                      fill = F, sep = '\t', all_true = T)
 
+a = prot_df[-1] %>% 
+  colSums(na.rm = T) %>% 
+  barplot()
+  filterSamplesBySeqDepth()
 
 # Clean rownames and colnames of proteomics data --------------------------
 
@@ -51,8 +55,11 @@ t0_cols =
 prot_df = prot_df[, !duplicated(colnames(prot_df))] %>% 
   rownames_to_column() %>% 
   dplyr::select(matches('UNTR|DF2|^DMSO|000'), rowname) %>% 
+  column_to_rownames() %>% 
+  filterSamplesBySeqDepth() %>% 
+  rownames_to_column() %>% 
   cleanProtIds() %>% 
-  dplyr::select(!rowname) 
+  dplyr::select(!rowname)
 
 prot_df = prot_df %>% 
   remove_rownames() %>% 

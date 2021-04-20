@@ -1,3 +1,30 @@
+addVarsProt <- function(x, fnc_list, by_str) {
+  fnc_str = fnc_list[1]
+  fnc = get(fnc_str)
+  transf_cols = colnames(x)[!grepl(by_str, colnames(x))]
+  by_lst = x[, by_str] %>% list()
+  names(by_lst) = by_str
+  df = x %>% 
+    .[, !grepl(by_str, colnames(x)), F] %>% 
+    aggregate.data.frame(by = by_lst, FUN = fnc, na.rm = TRUE) 
+  colnames(df)[!grepl(by_str, colnames(df))] = paste0(transf_cols, '_', fnc_str)
+  if (length(fnc_list) > 1) {
+    for (fnc_str in fnc_list[-1]) {
+      fnc = get(fnc_str)
+      transf_cols = colnames(x)[!grepl(by_str, colnames(x))]
+      by_lst = x[, by_str] %>% list()
+      names(by_lst) = by_str
+      x_2 = x %>% 
+        .[, !grepl(by_str, colnames(x)), F] %>% 
+        aggregate.data.frame(by = by_lst, FUN = fnc, na.rm = TRUE) 
+      colnames(x_2)[!grepl(by_str, colnames(x_2))] = paste0(transf_cols, '_', fnc_str)
+      df = x_2 %>% 
+        merge.data.frame(x = df, by = by_str)
+    }
+  }
+  return(df)
+}
+
 # Check that we have the same samples in transcrx and protx ---------------
 
 
@@ -13,15 +40,27 @@ mrna_unip_df = mrna_unip_df %>%
   dplyr::filter(!grepl(pattern = paste0(noprotsamples, collapse = '|'), sample_name))
 
 
-mrna_unip_df_sum = mrna_unip_df[, 'TPM_value'] %>% 
-  aggregate.data.frame(by = list(uniprot_sample = mrna_unip_df$uniprot_sample), FUN = sum, na.rm = T)
+# mrna_unip_df_sum = mrna_unip_df[, 'TPM_value'] %>% 
+#   aggregate.data.frame(by = list(uniprot_sample = mrna_unip_df$uniprot_sample), FUN = sum, na.rm = T)
 
-colnames(mrna_unip_df_sum)[2] = c('TPM_value')
+mrna_unip_df_sum = mrna_unip_df[, c('uniprot_sample', 'TPM_value')] %>% 
+  addVarsProt(fnc_list = c('mean', 'median', 'min', 'max', 'sum', 'sd'), by_str = 'uniprot_sample')
+
+mrna_unip_df_sum_log2 = mrna_unip_df_sum[, -grep('uniprot_sample', colnames(mrna_unip_df_sum))] %>% 
+  log2()
+colnames(mrna_unip_df_sum_log2) = colnames(mrna_unip_df_sum_log2) %>% 
+  paste0('_log2')
+
+mrna_unip_df_sum = mrna_unip_df_sum %>% 
+  cbind.data.frame(mrna_unip_df_sum_log2)
+
+mrna_unip_df_sum[mrna_unip_df_sum == -Inf] = log2(2e-06)
+
 
 mrna_unip_df_ids = mrna_unip_df[, c('uniprot_sample', 'uniprotswissprot')] %>% unique()
 
-mrna_unip_df_median = mrna_unip_df[, c('strand', 'transcript_length', 'percentage_gene_gc_content', 'cds_length')] %>% 
-  aggregate.data.frame(by = list(uniprotswissprot = mrna_unip_df$uniprotswissprot), FUN = median, na.rm = T)
+mrna_unip_df_median = mrna_unip_df[, c('uniprotswissprot', 'strand', 'transcript_length', 'percentage_gene_gc_content', 'cds_length')] %>% 
+  addVarsProt(fnc_list = c('mean', 'median', 'min', 'max', 'sum', 'sd'), by_str = 'uniprotswissprot')
 
 mrna_unip_df = merge.data.frame(mrna_unip_df_ids, mrna_unip_df_sum, 'uniprot_sample')
 mrna_unip_df = merge.data.frame(mrna_unip_df, mrna_unip_df_median, 'uniprotswissprot')
