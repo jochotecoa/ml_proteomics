@@ -180,5 +180,23 @@ colnames(mirna_feats_dcast_all)[-grep('prot', colnames(mirna_feats_dcast_all))] 
   colnames(mirna_feats_dcast_all)[-grep('prot', colnames(mirna_feats_dcast_all))] %>% 
   paste0('_all')
 
+mirna_feats_dcast_log2 = mirna_feats_dcast[, -grep('uniprot_sample', colnames(mirna_feats_dcast))] %>% 
+  log2()
+colnames(mirna_feats_dcast_log2) = colnames(mirna_feats_dcast_log2) %>% 
+  paste0('_log2')
+mirna_feats_dcast = mirna_feats_dcast %>% 
+  cbind.data.frame(mirna_feats_dcast_log2)
+mirna_feats_dcast[mirna_feats_dcast == -Inf] = log2(2e-06)
+
+mirna_feats_dcast_all_log2 = mirna_feats_dcast_all[, -grep('uniprot_sample', colnames(mirna_feats_dcast_all))] %>% 
+  log2()
+colnames(mirna_feats_dcast_all_log2) = colnames(mirna_feats_dcast_all_log2) %>% 
+  paste0('_log2')
+mirna_feats_dcast_all = mirna_feats_dcast_all %>% 
+  cbind.data.frame(mirna_feats_dcast_all_log2)
+mirna_feats_dcast_all[mirna_feats_dcast_all == -Inf] = log2(2e-06)
+
+
+
 saveRDS(mirna_feats_dcast, 'data/miRNA/mirna_feats_dcast.rds')
 saveRDS(mirna_feats_dcast_all, 'data/miRNA/mirna_feats_dcast_all.rds')
