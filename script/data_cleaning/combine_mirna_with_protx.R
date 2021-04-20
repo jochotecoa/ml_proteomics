@@ -11,11 +11,13 @@ if (all(file.exists('data/miRNA/score_feats.rds'), file.exists('data/miRNA/mirna
 mrna_prot_df$uniprotswissprot = mrna_prot_df %>% 
   rownames() %>% 
   strsplit('--') %>% 
-  sapply('[[', 1)
+  sapply('[[', 1) %>% 
+  as.character()
 mrna_prot_df$sample_name = mrna_prot_df %>% 
   rownames() %>% 
   strsplit('--') %>% 
-  sapply('[[', 2)
+  sapply('[[', 2) %>% 
+  as.character()
 
 i_df = mrna_prot_df
 mrna_prot_df = i_df
