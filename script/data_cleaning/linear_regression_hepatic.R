@@ -55,10 +55,10 @@ mrna_prot_df = mrna_prot_df %>% as.data.frame()
 #   warning(paste(prev_rows - (nrow(mrna_prot_df)), 'rows have been removed due to missing values'))
 # }
 
-mrna_prot_df = readRDS('data/training_data.rds')
-
-X = mrna_prot_df[, -grep('proteomics', colnames(mrna_prot_df))] %>% as.data.frame()
-Y = mrna_prot_df[, grep('proteomics', colnames(mrna_prot_df))]
+# mrna_prot_df = readRDS('data/training_data.rds')
+# 
+# X = mrna_prot_df[, -grep('proteomics', colnames(mrna_prot_df))] %>% as.data.frame()
+# Y = mrna_prot_df[, grep('proteomics', colnames(mrna_prot_df))]
 
 
 # Identifying Correlated Predictors
