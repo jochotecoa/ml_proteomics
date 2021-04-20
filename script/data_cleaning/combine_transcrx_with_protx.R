@@ -6,17 +6,17 @@ mrna_prot_df = mrna_unip_df %>%
 mrna_prot_df %>% dplyr::select(where(is.numeric)) %>% na.omit %>% cor
 
 mrna_prot_df = mrna_prot_df %>% 
-  dplyr::select(!contains('.y'))
+  dplyr::select(!contains('\\.y'))
 
 colnames(mrna_prot_df) = colnames(mrna_prot_df) %>% 
-  gsub(pattern = '.x', replacement = '')
+  gsub(pattern = '\\.x', replacement = '')
 
 
 
 mrna_prot_df = mrna_prot_df %>%
   dplyr::filter(!is.na(proteomics_value))
 
-mrna_prot_df = mrna_prot_df[mrna_prot_df$TPM_value != 0, ]
+# mrna_prot_df = mrna_prot_df[mrna_prot_df$TPM_value != 0, ]
 
 # mrna_prot_df$log2_TPM_value = log2(mrna_prot_df$TPM_value)
 
