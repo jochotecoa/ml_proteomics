@@ -11,6 +11,6 @@ sizes = as.integer(seq(2, ncol(X), (ncol(X)-2)/4))[-5]
                                             method = 'repeatedcv'),
                     ## pass options to train()
                     method = "svmRadial")
-  saveRDS(svmProfile, '../output/rfe/svmProfile.rds')
+  saveRDS(svmProfile, '../output_rfe/svmProfile.rds')
   stopCluster(cl)
   

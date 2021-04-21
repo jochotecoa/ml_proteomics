@@ -31,6 +31,17 @@ mrna_prot_df = mrna_prot_df %>%
   merge.data.frame(seq_depth_mir, 'sample_name', all.x = T) %>% 
   column_to_rownames('uniprot_sample')
 
+mirna_abs_cols = colnames(mrna_prot_df) %>% 
+  subset(., grepl('mirna', .)) %>% 
+  subset(., !grepl('log', .))
+
+mirna_log_cols = colnames(mrna_prot_df) %>% 
+  subset(., grepl('mirna', .)) %>% 
+  subset(., grepl('log', .))
+
+mrna_prot_df[, mirna_abs_cols][is.na(mrna_prot_df[, mirna_abs_cols])] = 0
+mrna_prot_df[, mirna_log_cols][is.na(mrna_prot_df[, mirna_log_cols])] = log2(2e-06)
+
 # forceLibrary('pbmcapply')
 # pb_2 = progressBar(max = length(unique(mrna_prot_df$uniprotswissprot)))
 # 

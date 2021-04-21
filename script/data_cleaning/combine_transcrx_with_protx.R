@@ -6,7 +6,7 @@ mrna_prot_df = mrna_unip_df %>%
 mrna_prot_df %>% dplyr::select(where(is.numeric)) %>% na.omit %>% cor
 
 mrna_prot_df = mrna_prot_df %>% 
-  dplyr::select(!contains('\\.y'))
+  dplyr::select(!matches('\\.y'))
 
 colnames(mrna_prot_df) = colnames(mrna_prot_df) %>% 
   gsub(pattern = '\\.x', replacement = '')
