@@ -39,8 +39,13 @@ mirna_log_cols = colnames(mrna_prot_df) %>%
   subset(., grepl('mirna', .)) %>% 
   subset(., grepl('log', .))
 
+mirna_score_cols = colnames(mrna_prot_df) %>% 
+  subset(., grepl('score', .)) 
+  
 mrna_prot_df[, mirna_abs_cols][is.na(mrna_prot_df[, mirna_abs_cols])] = 0
 mrna_prot_df[, mirna_log_cols][is.na(mrna_prot_df[, mirna_log_cols])] = log2(2e-06)
+mrna_prot_df[, mirna_score_cols][is.na(mrna_prot_df[, mirna_score_cols])] = 0
+
 
 # forceLibrary('pbmcapply')
 # pb_2 = progressBar(max = length(unique(mrna_prot_df$uniprotswissprot)))

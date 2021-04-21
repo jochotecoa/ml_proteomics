@@ -65,6 +65,7 @@ Y = mrna_prot_df[, grep('proteomics', colnames(mrna_prot_df))]
 
 descrCor <- cor(na.omit(X))
 highlyCor <- findCorrelation(descrCor, cutoff = .75)
+corrplot::corrplot(descrCor[-highlyCor, highlyCor])
 if (length(highlyCor) > 0) {
   X <- X[,-highlyCor]
 }
