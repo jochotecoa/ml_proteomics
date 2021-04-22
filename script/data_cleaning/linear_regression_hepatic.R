@@ -11,7 +11,7 @@ source('script/data_cleaning/protein_data_cleaning.R')
 source('script/data_cleaning/transcript_expression_per_protein.R')
 
 source('script/data_cleaning/testing_sample_compability_between_transcrx_and_protx.R')
-mrna_unip_df %>% dim
+
 # if (file.exists('data/whole_raw_dataset.rds')) {
 #   mrna_prot_df = readRDS('data/whole_raw_dataset.rds')
 # } else {

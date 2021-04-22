@@ -74,19 +74,30 @@ enst_mir = readRDS('data/mti/mrna_mir/mirna_transcript_strict_gene.rds')
 
 unzip(zipfile = 'data/mti/mrna_mir/miRDB_hsa_v6.0_prediction_result.txt.zip', exdir = 'data/mti/mrna_mir/')
 enst_mir_all = read.table('data/mti/mrna_mir/miRDB_hsa_v6.0_prediction_result.txt')
+file.remove('data/mti/mrna_mir/miRDB_hsa_v6.0_prediction_result.txt')
 colnames(enst_mir_all) = c('miRBase_ID', 'refseq_mrna', 'score')
 
 
 mart = openMart2018()
 refseq_swiss = getBM(filters = 'refseq_mrna', 
-                    values = unique(enst_mir_all$refseq_mrna), 
-                    attributes = c('refseq_mrna', 'uniprotswissprot'), 
-                    mart = mart)
+                     values = unique(enst_mir_all$refseq_mrna), 
+                     attributes = c('refseq_mrna', 'ensembl_transcript_id', 'uniprotswissprot'), 
+                     mart = mart)
 
 swiss_mir = enst_mir %>% 
   merge.data.frame(refseq_swiss, 'refseq_mrna')
 swiss_mir_all = enst_mir_all %>% 
   merge.data.frame(refseq_swiss, 'refseq_mrna')
+
+enst_df = mrna_df %>% 
+  rownames_to_column() %>% 
+  dplyr::filter(grepl('ENST', rowname)) %>% 
+  column_to_rownames()
+
+enst_df = enst_df[rowSums(enst_df) > 0, , F]
+
+swiss_mir = swiss_mir[swiss_mir$ensembl_transcript_id %in% rownames(enst_df), , F]
+swiss_mir_all = swiss_mir_all[swiss_mir_all$ensembl_transcript_id %in% rownames(enst_df), , F]
 
 mirna_swiss = mirna_rpm %>% 
   rownames_to_column('miRBase_ID') %>% 
@@ -120,10 +131,10 @@ saveRDS(score_feats_all, 'data/miRNA/score_feats_all.rds')
 
 
 mirna_feats = mirna_swiss %>% 
-  dplyr::select(!c(ensembl_gene_id,miRBase_ID, refseq_mrna)) %>% 
+  dplyr::select(!c(ensembl_gene_id,miRBase_ID, refseq_mrna, score, ensembl_transcript_id)) %>% 
   addVarsProt(fnc_list = c('mean', 'median', 'min', 'max', 'sum', 'sd'), by_str = 'uniprotswissprot')
 mirna_feats_all = mirna_swiss_all %>% 
-  dplyr::select(!c(miRBase_ID, refseq_mrna)) %>% 
+  dplyr::select(!c(miRBase_ID, refseq_mrna, score, ensembl_transcript_id)) %>% 
   addVarsProt(fnc_list = c('mean', 'median', 'min', 'max', 'sum', 'sd'), by_str = 'uniprotswissprot')
 
 saveRDS(mirna_feats, 'data/miRNA/mirna_feats.rds')
