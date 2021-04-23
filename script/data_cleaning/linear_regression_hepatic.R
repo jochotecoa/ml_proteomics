@@ -27,6 +27,7 @@ source('script/data_cleaning/combine_circrna_with_protx.R')
 
 nzv_m <- nearZeroVar(mrna_prot_df, saveMetrics = T)
 nzv <- nearZeroVar(mrna_prot_df)
+nzv_m[nzv, ] %>% View()
 
 if (length(nzv) > 0) {
   zv_colnames = colnames(mrna_prot_df)[nzv_m$zeroVar]
@@ -64,6 +65,10 @@ Y = mrna_prot_df[, grep('proteomics', colnames(mrna_prot_df))]
 
 
 # Identifying Correlated Predictors
+
+X = X %>% 
+  dplyr::select(-circ_score_min) # it only has 2 values: 0 (rows with NAs) and 8
+
 
 descrCor <- cor(na.omit(X))
 highlyCor <- findCorrelation(descrCor, cutoff = .75)

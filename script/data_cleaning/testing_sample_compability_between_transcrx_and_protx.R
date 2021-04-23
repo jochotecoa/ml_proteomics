@@ -72,3 +72,7 @@ mrna_unip_df_median = mrna_unip_df[, c('uniprotswissprot', 'strand',
 
 mrna_unip_df = merge.data.frame(mrna_unip_df_ids, mrna_unip_df_sum, 'uniprot_sample')
 mrna_unip_df = merge.data.frame(mrna_unip_df, mrna_unip_df_median, 'uniprotswissprot')
+
+mrna_unip_df[, 'TPM_value_sd'] = mrna_unip_df[, 'TPM_value_sd'] %>% 
+  naToZero()
+mrna_unip_df[, 'TPM_value_sd_log2'][is.na(mrna_unip_df[, 'TPM_value_sd_log2'])] = log2(2e-06)

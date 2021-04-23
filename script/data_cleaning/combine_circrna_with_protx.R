@@ -28,11 +28,11 @@ mrna_prot_df = mrna_prot_df %>%
   column_to_rownames('uniprot_sample')
 
 circrna_abs_cols = colnames(mrna_prot_df) %>% 
-  subset(., grepl('circrna', .)) %>% 
+  subset(., grepl('circ', .)) %>% 
   subset(., !grepl('log', .))
 
 circrna_log_cols = colnames(mrna_prot_df) %>% 
-  subset(., grepl('circrna', .)) %>% 
+  subset(., grepl('circ', .)) %>% 
   subset(., grepl('log', .))
 
 circrna_score_cols = colnames(mrna_prot_df) %>% 
