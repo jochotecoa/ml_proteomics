@@ -43,7 +43,6 @@ colnames(cir_mir2)[2] = 'circ_score'
 
 dir.create('../ml_bigdata/')
 
-saveRDS(cir_mir, '../ml_bigdata/cir_mir.rds')
 saveRDS(cir_mir2, '../ml_bigdata/cir_mir2.rds')
 
 circ_df['circBase_ID'] = circ_df[, 'circBase_ID'] %>% 
@@ -119,30 +118,53 @@ enst_df = enst_df[rowSums(enst_df) > 0, , F]
 swiss_mir = swiss_mir[swiss_mir$ensembl_transcript_id %in% rownames(enst_df), , F]
 swiss_mir_all = swiss_mir_all[swiss_mir_all$ensembl_transcript_id %in% rownames(enst_df), , F]
 
+cir_mir = cir_mir[-1]
+cir_mir2 = cir_mir2[-1]
+
+swiss_mir = swiss_mir %>% 
+  dplyr::select(-c(refseq_mrna, ensembl_gene_id, ensembl_transcript_id, score)) %>% 
+  unique.data.frame()
+swiss_mir_all = swiss_mir_all %>% 
+  dplyr::select(-c(refseq_mrna, score, ensembl_transcript_id)) %>% 
+  unique.data.frame()
+
+
+# Filter by proteomics ----------------------------------------------------
+
+source('script/data_cleaning/protein_data_cleaning.R')
+
+
+swiss_mir = swiss_mir[swiss_mir$uniprotswissprot %in% prot_df$uniprotswissprot, ]
+swiss_mir_all = swiss_mir_all[swiss_mir_all$uniprotswissprot %in% prot_df$uniprotswissprot, ]
+
 cir_mir = cir_mir %>% 
   merge.data.frame(swiss_mir, 'miRBase_ID')
 cir_mir2 = cir_mir2 %>% 
   merge.data.frame(swiss_mir_all, 'miRBase_ID')
 
+cir_mir = cir_mir %>% 
+  dplyr::select(-c(miRBase_ID)) %>% 
+  unique.data.frame()
+
+cir_mir = cir_mir[cir_mir$uniprotswissprot %in% prot_df$uniprotswissprot, ]
+
+saveRDS(cir_mir, '../ml_bigdata/cir_mir.rds')
+
 # Combine protein IDs with circ IDs ---------------------------------------
 
 circ_df_stringent = circ_df %>% 
   merge.data.frame(cir_mir, 'circBase_ID')
-circ_df_all = circ_df %>% 
-  merge.data.frame(cir_mir2, 'circBase_ID')
+# circ_df_all = circ_df %>% 
+#   merge.data.frame(cir_mir2, 'circBase_ID')
 
-circ_scores_stringent = cir_mir 
-circ_scores_all = cir_mir2 
+saveRDS(cir_mir, '../ml_bigdata/circ_prot_scores_stringent.rds')  
+# circ_scores_all = cir_mir2 
+
+saveRDS(circ_df_stringent, '../ml_bigdata/circ_df_stringent.rds')
+
+source('script/data_cleaning/circrna_measures.R')
 
 
-
-circ_feats_str = circ_df_stringent %>% 
-  dplyr::select(!c(circBase_ID, rowname, Var1, circ_score, miRBase_ID, ensembl_gene_id, refseq_mrna)) %>% 
-  addVarsProt(fnc_list = c('mean', 'median', 'min', 'max', 'sum', 'sd'), by_str = 'uniprotswissprot')
-
-circ_feats_all = circ_df_all %>% 
-  dplyr::select(!c(circBase_ID, rowname, Var1, circ_score, miRBase_ID, ensembl_gene_id, refseq_mrna)) %>% 
-  addVarsProt(fnc_list = c('mean', 'median', 'min', 'max', 'sum', 'sd'), by_str = 'uniprotswissprot')
 
 
 

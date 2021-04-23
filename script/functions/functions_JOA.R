@@ -423,3 +423,30 @@ iq_ratio <- function(x, prba = F) {
   ratio_vector[is.na(ratio_vector)] = 1000
   return(ratio_vector)
 }
+
+addVarsProt <- function(x, fnc_list, by_str) {
+  fnc_str = fnc_list[1]
+  fnc = get(fnc_str)
+  transf_cols = colnames(x)[!grepl(by_str, colnames(x))]
+  by_lst = x[, by_str] %>% list()
+  names(by_lst) = by_str
+  df = x %>% 
+    .[, !grepl(by_str, colnames(x)), F] %>% 
+    aggregate.data.frame(by = by_lst, FUN = fnc, na.rm = TRUE) 
+  colnames(df)[!grepl(by_str, colnames(df))] = paste0(transf_cols, '_', fnc_str)
+  if (length(fnc_list) > 1) {
+    for (fnc_str in fnc_list[-1]) {
+      fnc = get(fnc_str)
+      transf_cols = colnames(x)[!grepl(by_str, colnames(x))]
+      by_lst = x[, by_str] %>% list()
+      names(by_lst) = by_str
+      x_2 = x %>% 
+        .[, !grepl(by_str, colnames(x)), F] %>% 
+        aggregate.data.frame(by = by_lst, FUN = fnc, na.rm = TRUE) 
+      colnames(x_2)[!grepl(by_str, colnames(x_2))] = paste0(transf_cols, '_', fnc_str)
+      df = x_2 %>% 
+        merge.data.frame(x = df, by = by_str)
+    }
+  }
+  return(df)
+}
