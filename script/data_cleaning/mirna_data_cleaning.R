@@ -125,7 +125,6 @@ colnames(score_feats_all)[-1] = paste0(colnames(score_feats_all)[-1], '_all')
 score_feats = score_feats[score_feats$uniprotswissprot != '', , F]
 score_feats_all = score_feats_all[score_feats_all$uniprotswissprot != '', , F]
 
-
 saveRDS(score_feats, 'data/miRNA/score_feats.rds')
 saveRDS(score_feats_all, 'data/miRNA/score_feats_all.rds')
 

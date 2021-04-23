@@ -6,6 +6,13 @@ compound = 't0_controls_ML'
 
 source('script/data_cleaning/mrna_data_cleaning.R')
 
+seq_depth_trx = mrna_df_counts %>% 
+  colSums(na.rm = T) %>% 
+  melt() %>% 
+  rownames_to_column('sample_name')
+colnames(seq_depth_trx)[2] = 'sequencing_depth_transcriptomics'
+
+saveRDS(seq_depth_trx, 'data/seq_depth_trx.rds')
 
 circ_df = mrna_df %>% 
   rownames_to_column() %>% 

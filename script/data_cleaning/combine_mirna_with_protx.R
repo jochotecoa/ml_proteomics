@@ -31,6 +31,8 @@ mrna_prot_df = mrna_prot_df %>%
   merge.data.frame(seq_depth_mir, 'sample_name', all.x = T) %>% 
   column_to_rownames('uniprot_sample')
 
+colnames(mrna_prot_df)[grep('seq_depth', colnames(mrna_prot_df))] = 'seq_depth_mirna'
+
 mirna_abs_cols = colnames(mrna_prot_df) %>% 
   subset(., grepl('mirna', .)) %>% 
   subset(., !grepl('log', .))

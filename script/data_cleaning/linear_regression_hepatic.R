@@ -20,6 +20,8 @@ source('script/data_cleaning/testing_sample_compability_between_transcrx_and_pro
 
 source('script/data_cleaning/combine_mirna_with_protx.R')
 
+source('script/data_cleaning/combine_circrna_with_protx.R')
+
 # Pre-processing ----------------------------------------------------------
 # Zero- and Near Zero-Variance Predictors
 
