@@ -22,6 +22,8 @@ source('script/data_cleaning/combine_mirna_with_protx.R')
 
 source('script/data_cleaning/combine_circrna_with_protx.R')
 
+source('script/data_cleaning/combine_prot_stability_with_protx.R')
+
 # Pre-processing ----------------------------------------------------------
 # Zero- and Near Zero-Variance Predictors
 
