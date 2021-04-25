@@ -19,4 +19,4 @@ mrna_prot_df = mrna_prot_df %>%
   column_to_rownames('uniprot_sample')
 
 mrna_prot_df = mrna_prot_df %>%  
-  dplyr::select(-c(uniprotswissprot, sample_name))
+  dplyr::select(-c(uniprotswissprot))

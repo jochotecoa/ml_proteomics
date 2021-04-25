@@ -27,7 +27,7 @@ prot_stab_data = prot_stab_data[prot_stab_data$uniprotswissprot != '', , F]
 
 prot_stab_feats = prot_stab_data %>% 
   dplyr::select(-c(entrezgene, Symbol)) %>% 
-  addVarsProt(fnc_list = c('mean', 'median', 'min', 'max', 'sum', 'sd'), by_str = 'uniprotswissprot') %>% 
+  addVarsProt(fnc_list = c('mean', 'median', 'min', 'max', 'sd'), by_str = 'uniprotswissprot') %>% 
   unique.data.frame()
 
 dir.create('data/stability/')
