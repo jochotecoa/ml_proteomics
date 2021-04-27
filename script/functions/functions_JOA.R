@@ -450,3 +450,12 @@ addVarsProt <- function(x, fnc_list, by_str) {
   }
   return(df)
 }
+
+getSubOptVars <- function(prof) {
+  rmses = prof$results$RMSE
+  vars = prof$results$Variables
+  
+  opt_error = min(rmses) + (max(rmses) - min(rmses))/10
+  opt_vars = prof$results$Variables[prof$results$RMSE < opt_error][1]
+  return(opt_vars)
+}
