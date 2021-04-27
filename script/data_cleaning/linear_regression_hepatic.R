@@ -26,7 +26,7 @@ source('script/data_cleaning/combine_prot_stability_with_protx.R')
 
 # Pre-processing ----------------------------------------------------------
 # Zero- and Near Zero-Variance Predictors
-
+ncol(mrna_prot_df) - 1
 nzv_m <- nearZeroVar(mrna_prot_df, saveMetrics = T)
 nzv <- nearZeroVar(mrna_prot_df)
 nzv_m[nzv, ] %>% View()
@@ -41,11 +41,11 @@ if (length(nzv) > 0) {
 }
 
 # Creating Dummy Variables
-
+ncol(mrna_prot_df) - 1
 dummies <- dummyVars(" ~ .", data = mrna_prot_df)
 mrna_prot_df = predict(dummies, newdata = mrna_prot_df)
 mrna_prot_df = mrna_prot_df %>% as.data.frame()
-
+ncol(mrna_prot_df) - 1
 
 # Handle Missing Values ---------------------------------------------------
 
@@ -67,7 +67,7 @@ Y = mrna_prot_df[, grep('proteomics', colnames(mrna_prot_df))]
 
 
 # Identifying Correlated Predictors
-
+ncol(X)
 X = X %>% 
   dplyr::select(-circ_score_min) # it only has 2 values: 0 (rows with NAs) and 8
 
@@ -81,6 +81,7 @@ if (length(highlyCor) > 0) {
 
 
 # Linear Dependencies
+ncol(X)
 
 comboInfo <- findLinearCombos(na.omit(X))
 if (length(comboInfo$remove) > 0) {
@@ -88,6 +89,7 @@ if (length(comboInfo$remove) > 0) {
 }
 
 X = X %>% as.data.frame()
+ncol(X)
 
 normalization <- preProcess(X, verbose = T, method = c("center", "scale", "knnImpute"))
 X <- predict(normalization, X) %>% 
