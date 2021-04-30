@@ -12,4 +12,4 @@ nnetProfile <- rfe(X, Y,
                         method = "nnet")
 file_rds = paste0(path_output, '/nnetProfile.rds')
 saveRDS(nnetProfile, file_rds)
-stopCluster(cl)
+# stopCluster(cl)

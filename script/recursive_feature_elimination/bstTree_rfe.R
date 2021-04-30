@@ -15,4 +15,4 @@ bstTreeProfile <- rfe(X, Y,
 file_rds = paste0(path_output, '/bstTreeProfile.rds')
 saveRDS(bstTreeProfile, file_rds)
 
-stopCluster(cl)
+# stopCluster(cl)

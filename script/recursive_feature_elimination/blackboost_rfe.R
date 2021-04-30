@@ -15,4 +15,4 @@ blackboostProfile <- rfe(X, Y,
 file_rds = paste0(path_output, '/blackboostProfile.rds')
 saveRDS(blackboostProfile, file_rds)
 
-stopCluster(cl)
+# stopCluster(cl)

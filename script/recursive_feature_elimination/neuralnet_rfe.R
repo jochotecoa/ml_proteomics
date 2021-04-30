@@ -12,4 +12,4 @@ neuralnetProfile <- rfe(X, Y,
                   method = "neuralnet")
 file_rds = paste0(path_output, '/neuralnetProfile.rds')
 saveRDS(neuralnetProfile, file_rds)
-stopCluster(cl)
+# stopCluster(cl)

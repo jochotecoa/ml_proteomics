@@ -103,5 +103,5 @@ sizes = seq(2, ncol(X)) %>% as.integer()
   # }
   
   # saveRDS(lmProfile2, '../output_rfe/lmProfile2.rds')
-  stopCluster(cl)
+  # stopCluster(cl)
   

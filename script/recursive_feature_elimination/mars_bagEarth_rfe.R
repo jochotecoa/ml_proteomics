@@ -14,4 +14,4 @@ bagEarthProfile <- rfe(X, Y,
                      method = "bagEarth")
 file_rds = paste0(path_output, '/bagEarthProfile.rds')
 saveRDS(bagEarthProfile, file_rds)
-stopCluster(cl)
+# stopCluster(cl)

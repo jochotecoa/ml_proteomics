@@ -13,4 +13,4 @@ svmProfile <- rfe(X, Y,
                   method = "svmRadial")
 file_rds = paste0(path_output, '/svmProfile.rds')
 saveRDS(svmProfile, file_rds)
-stopCluster(cl)
+# stopCluster(cl)

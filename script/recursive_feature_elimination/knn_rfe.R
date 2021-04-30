@@ -12,4 +12,4 @@ knnProfile <- rfe(X, Y,
                        method = "knn")
 file_rds = paste0(path_output, '/knnProfile.rds')
 saveRDS(knnProfile, file_rds)
-stopCluster(cl)
+# stopCluster(cl)

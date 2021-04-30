@@ -14,4 +14,4 @@ glmnetProfile <- rfe(X, Y,
                   method = "glmnet")
 file_rds = paste0(path_output, '/glmnetProfile.rds')
 saveRDS(glmnetProfile, file_rds)
-stopCluster(cl)
+# stopCluster(cl)

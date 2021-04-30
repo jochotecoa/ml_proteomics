@@ -13,4 +13,4 @@ cubistProfile <- rfe(X, Y,
                    method = "cubist")
 file_rds = paste0(path_output, '/cubistProfile.rds')
 saveRDS(cubistProfile, file_rds)
-stopCluster(cl)
+# stopCluster(cl)
