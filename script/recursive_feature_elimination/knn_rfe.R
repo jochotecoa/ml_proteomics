@@ -10,5 +10,6 @@ knnProfile <- rfe(X, Y,
                                              method = 'repeatedcv'),
                      ## pass options to train()
                        method = "knn")
-saveRDS(knnProfile, '../output_rfe/knnProfile.rds')
+file_rds = paste0(path_output, '/knnProfile.rds')
+saveRDS(knnProfile, file_rds)
 stopCluster(cl)

@@ -99,6 +99,19 @@ X <- predict(normalization, X) %>%
 saveRDS(object = X, file = 'data/training_data_preds.rds')
 saveRDS(object = Y, file = 'data/training_data_target.rds')
 
+mrna_prot_df_na_omit = na.omit(mrna_prot_df)
+
+X_clean = mrna_prot_df_na_omit[, -grep('proteomics', colnames(mrna_prot_df_na_omit))] %>% as.data.frame()
+Y_clean = mrna_prot_df_na_omit[, grep('proteomics', colnames(mrna_prot_df_na_omit))]
+
+normalization <- preProcess(X_clean, verbose = T, method = c("center", "scale"))
+X_clean <- predict(normalization, X_clean) %>% 
+  as.data.frame() 
+
+
+saveRDS(object = X_clean, file = 'data/training_data_preds_na_omit.rds')
+saveRDS(object = Y_clean, file = 'data/training_data_target_na_omit.rds')
+
 # 
 # 
 # trainIndex = createDataPartition(mrna_prot_df$proteomics_value, p=.8, list=F, 

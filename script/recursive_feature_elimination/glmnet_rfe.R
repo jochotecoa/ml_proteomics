@@ -12,5 +12,6 @@ glmnetProfile <- rfe(X, Y,
                                           method = 'repeatedcv'),
                   ## pass options to train()
                   method = "glmnet")
-saveRDS(glmnetProfile, '../output_rfe/glmnetProfile.rds')
+file_rds = paste0(path_output, '/glmnetProfile.rds')
+saveRDS(glmnetProfile, file_rds)
 stopCluster(cl)

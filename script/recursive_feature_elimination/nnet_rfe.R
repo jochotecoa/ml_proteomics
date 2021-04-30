@@ -10,5 +10,6 @@ nnetProfile <- rfe(X, Y,
                                                 method = 'repeatedcv'),
                         ## pass options to train()
                         method = "nnet")
-saveRDS(nnetProfile, '../output_rfe/nnetProfile.rds')
+file_rds = paste0(path_output, '/nnetProfile.rds')
+saveRDS(nnetProfile, file_rds)
 stopCluster(cl)

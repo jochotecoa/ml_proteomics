@@ -66,7 +66,8 @@ sizes = seq(2, ncol(X)) %>% as.integer()
 # 
 # }
 
-  saveRDS(lmProfile, '../output_rfe/lmProfile.rds')
+  file_rds = paste0(path_output, '/lmProfile.rds')
+  saveRDS(lmProfile, file_rds)
 
 # With rerank -------------------------------------------------------------
 

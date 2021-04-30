@@ -10,5 +10,6 @@ sizes = as.integer(seq(2, ncol(X), (ncol(X)-2)/4))[-5]
                                             verbose = T,
                                             allowParallel = T, 
                                             method = 'repeatedcv'))
-  saveRDS(bagProfile, '../output_rfe/bagProfile.rds')
+  file_rds = paste0(path_output, '/bagProfile.rds')
+  saveRDS(bagProfile, file_rds)
   stopCluster(cl)

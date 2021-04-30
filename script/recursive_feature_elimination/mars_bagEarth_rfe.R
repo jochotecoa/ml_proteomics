@@ -12,5 +12,6 @@ bagEarthProfile <- rfe(X, Y,
                                              method = 'repeatedcv'),
                      ## pass options to train()
                      method = "bagEarth")
-saveRDS(bagEarthProfile, '../output_rfe/bagEarthProfile.rds')
+file_rds = paste0(path_output, '/bagEarthProfile.rds')
+saveRDS(bagEarthProfile, file_rds)
 stopCluster(cl)

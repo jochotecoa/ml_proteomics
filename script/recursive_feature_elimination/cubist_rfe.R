@@ -11,5 +11,6 @@ cubistProfile <- rfe(X, Y,
                                            method = 'repeatedcv'),
                    ## pass options to train()
                    method = "cubist")
-saveRDS(cubistProfile, '../output_rfe/cubistProfile.rds')
+file_rds = paste0(path_output, '/cubistProfile.rds')
+saveRDS(cubistProfile, file_rds)
 stopCluster(cl)

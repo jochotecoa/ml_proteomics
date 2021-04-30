@@ -12,5 +12,7 @@ blackboostProfile <- rfe(X, Y,
                                              method = 'repeatedcv'),
                      ## pass options to train()
                      method = "blackboost")
-saveRDS(blackboostProfile, '../output_rfe/blackboostProfile.rds')
+file_rds = paste0(path_output, '/blackboostProfile.rds')
+saveRDS(blackboostProfile, file_rds)
+
 stopCluster(cl)

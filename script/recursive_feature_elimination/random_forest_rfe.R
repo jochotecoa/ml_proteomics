@@ -65,5 +65,6 @@ rfProfile <- rfe(X, Y,
 # 
 # }
 
-saveRDS(rfProfile, '../output_rfe/rfProfile.rds')
+file_rds = paste0(path_output, '/rfProfile.rds')
+saveRDS(rfProfile, file_rds)
 stopCluster(cl)

@@ -10,5 +10,6 @@ neuralnetProfile <- rfe(X, Y,
                                           method = 'repeatedcv'),
                   ## pass options to train()
                   method = "neuralnet")
-saveRDS(neuralnetProfile, '../output_rfe/neuralnetProfile.rds')
+file_rds = paste0(path_output, '/neuralnetProfile.rds')
+saveRDS(neuralnetProfile, file_rds)
 stopCluster(cl)

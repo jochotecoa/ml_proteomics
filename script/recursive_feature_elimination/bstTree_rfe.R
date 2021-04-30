@@ -12,5 +12,7 @@ bstTreeProfile <- rfe(X, Y,
                                                  method = 'repeatedcv'),
                          ## pass options to train()
                          method = "bstTree")
-saveRDS(bstTreeProfile, '../output_rfe/bstTreeProfile.rds')
+file_rds = paste0(path_output, '/bstTreeProfile.rds')
+saveRDS(bstTreeProfile, file_rds)
+
 stopCluster(cl)
