@@ -17,7 +17,7 @@ Y = readRDS(file = file_Y) %>%
 # dplyr::select(!contains('strand')) # including the strand column gives always an error, independently of the algorithm used
 
 # sizes = seq(1, ncol(X), (ncol(X)-1)/5) %>% as.integer()
-sizes = seq(1, ncol(X), 1) %>% as.integer()
+sizes = seq(2, ncol(X), 1) %>% as.integer()
 
 path_output = '../output_rfe/na_omit'
 if (!dir.exists(path_output)) {
@@ -26,18 +26,18 @@ if (!dir.exists(path_output)) {
 
 
 
+source('script/recursive_feature_elimination/linear_model_rfe.R',)
+source('script/recursive_feature_elimination/glmnet_rfe.R')
 
 source('script/recursive_feature_elimination/bagged_cart_rfe.R')
 source('script/recursive_feature_elimination/blackboost_rfe.R')
 source('script/recursive_feature_elimination/bstTree_rfe.R')
 source('script/recursive_feature_elimination/cubist_rfe.R')
-source('script/recursive_feature_elimination/glmnet_rfe.R')
-source('script/recursive_feature_elimination/linear_model_rfe.R')
-source('script/recursive_feature_elimination/nnet_rfe.R')
 source('script/recursive_feature_elimination/random_forest_rfe.R')
 
 source('script/recursive_feature_elimination/kknn_rfe.R')
 source('script/recursive_feature_elimination/knn_rfe.R')
+source('script/recursive_feature_elimination/nnet_rfe.R')
 source('script/recursive_feature_elimination/neuralnet_rfe.R')
 source('script/recursive_feature_elimination/mars_bagEarth_rfe.R')
 source('script/recursive_feature_elimination/support_vector_machine_rfe.R')

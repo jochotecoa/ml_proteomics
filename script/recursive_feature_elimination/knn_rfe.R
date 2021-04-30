@@ -1,4 +1,4 @@
-source('script/recursive_feature_elimination/load_data_rfe.R')
+# source('script/recursive_feature_elimination/load_data_rfe.R')
 # KNN
 
 sizes = as.integer(seq(2, ncol(X), (ncol(X)-2)/4))[-5]

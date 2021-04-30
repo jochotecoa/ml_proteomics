@@ -1,4 +1,4 @@
-source('script/recursive_feature_elimination/load_data_rfe.R')
+# source('script/recursive_feature_elimination/load_data_rfe.R')
 # cubist
 forceLibrary('Cubist')
 

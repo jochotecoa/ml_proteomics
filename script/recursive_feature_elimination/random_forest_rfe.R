@@ -1,4 +1,4 @@
-source('script/recursive_feature_elimination/load_data_rfe.R')
+# source('script/recursive_feature_elimination/load_data_rfe.R')
 forceLibrary('randomForest')
 
 generate_new_sizes <- function(bestSubset, ncol_X, sizes) {

@@ -1,4 +1,4 @@
-source('script/recursive_feature_elimination/load_data_rfe.R')
+# source('script/recursive_feature_elimination/load_data_rfe.R')
 
 generate_new_sizes <- function(bestSubset, ncol_X, sizes) {
   if(length(sizes) == 1){return(bestSubset)}
