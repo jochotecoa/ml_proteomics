@@ -10,11 +10,11 @@ registerDoParallel(cl)
 file_X_train = 'data/training_data_preds.rds'
 file_Y = 'data/training_data_target.rds'
 
-X_train = readRDS(object = , file = 'data/training_data_preds.rds')
-Y_train = readRDS(object = , file = 'data/training_data_target.rds')
+X_train = readRDS(file = 'data/training_data_preds.rds')
+Y_train = readRDS(file = 'data/training_data_target.rds')
 
-X_test = readRDS(object = , file = 'data/test_data_preds.rds')
-Y_test = readRDS(object = , file = 'data/test_data_target.rds')
+X_test = readRDS(file = 'data/test_data_preds.rds')
+Y_test = readRDS(file = 'data/test_data_target.rds')
 
 
 X = X_train %>% 
