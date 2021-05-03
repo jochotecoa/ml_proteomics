@@ -47,6 +47,22 @@ mrna_prot_df = predict(dummies, newdata = mrna_prot_df)
 mrna_prot_df = mrna_prot_df %>% as.data.frame()
 ncol(mrna_prot_df) - 1
 
+# Zero- and Near Zero-Variance Predictors
+ncol(mrna_prot_df) - 1
+nzv_m <- nearZeroVar(mrna_prot_df, saveMetrics = T)
+nzv <- nearZeroVar(mrna_prot_df)
+nzv_m[nzv, ] %>% View()
+
+if (length(nzv) > 0) {
+  zv_colnames = colnames(mrna_prot_df)[nzv_m$zeroVar]
+  nzv_colnames = colnames(mrna_prot_df)[as.logical(nzv_m$nzv - nzv_m$zeroVar)]
+  nzv_m[nzv, ] %>% print()
+  # warning(paste(paste0(zv_colnames, collapse = ', '), 'presented zero variance'))
+  # warning(paste(paste0(nzv_colnames, collapse = ', '), 'presented near zero variance'))
+  mrna_prot_df <- mrna_prot_df[, -nzv]
+}
+
+
 # Handle Missing Values ---------------------------------------------------
 
 # feat_missval = mrna_prot_df %>% apply(2, anyNA) %>% subset(., .) %>% names()
@@ -91,26 +107,76 @@ if (length(comboInfo$remove) > 0) {
 X = X %>% as.data.frame()
 ncol(X)
 
+# Data splitting ----------------------------------------------------------
+
+
+mrna_prot_df_na_omit = cbind.data.frame(X, Y) %>% 
+  na.omit()
+
+colnames(mrna_prot_df_na_omit)[ncol(mrna_prot_df_na_omit)] = 'proteomics_value'
+
+ld_values = X$linear_density %>% unique
+ld_values_train = sample(x = ld_values, size = length(ld_values)*0.8)
+
+X_train = X[X$linear_density %in% ld_values_train, ]
+normalization <- preProcess(X_train, verbose = T, method = c("center", "scale", "knnImpute"))
+X_train <- predict(normalization, X_train) %>%
+  as.data.frame()
+Y_train = Y[X$linear_density %in% ld_values_train]
+
+X_test = X[!(X$linear_density %in% ld_values_train), ]
+normalization <- preProcess(X_test, verbose = T, method = c("center", "scale", "knnImpute"))
+X_test <- predict(normalization, X_test) %>%
+  as.data.frame()
+Y_test = Y[!(X$linear_density %in% ld_values_train)]
+
+
+saveRDS(object = X_train, file = 'data/training_data_preds.rds')
+saveRDS(object = Y_train, file = 'data/training_data_target.rds')
+
+saveRDS(object = X_test, file = 'data/test_data_preds.rds')
+saveRDS(object = Y_test, file = 'data/test_data_target.rds')
+
 normalization <- preProcess(X, verbose = T, method = c("center", "scale", "knnImpute"))
-X <- predict(normalization, X) %>% 
-  as.data.frame() 
+X <- predict(normalization, X) %>%
+  as.data.frame()
 
+saveRDS(object = X, file = 'data/whole_data_preds.rds')
+saveRDS(object = Y, file = 'data/whole_data_target.rds')
 
-saveRDS(object = X, file = 'data/training_data_preds.rds')
-saveRDS(object = Y, file = 'data/training_data_target.rds')
-
-mrna_prot_df_na_omit = na.omit(mrna_prot_df)
 
 X_clean = mrna_prot_df_na_omit[, -grep('proteomics', colnames(mrna_prot_df_na_omit))] %>% as.data.frame()
 Y_clean = mrna_prot_df_na_omit[, grep('proteomics', colnames(mrna_prot_df_na_omit))]
+
+ld_values = X_clean$linear_density %>% unique
+ld_values_train = sample(x = ld_values, size = length(ld_values)*0.8)
+
+X_clean_train = X_clean[X_clean$linear_density %in% ld_values_train, ]
+normalization <- preProcess(X_clean_train, verbose = T, method = c("center", "scale"))
+X_clean_train <- predict(normalization, X_clean_train) %>%
+  as.data.frame()
+Y_clean_train = Y_clean[X_clean$linear_density %in% ld_values_train]
+
+X_clean_test = X_clean[!(X_clean$linear_density %in% ld_values_train), ]
+normalization <- preProcess(X_clean_test, verbose = T, method = c("center", "scale"))
+X_clean_test <- predict(normalization, X_clean_test) %>%
+  as.data.frame()
+Y_clean_test = Y_clean[!(X_clean$linear_density %in% ld_values_train)]
 
 normalization <- preProcess(X_clean, verbose = T, method = c("center", "scale"))
 X_clean <- predict(normalization, X_clean) %>% 
   as.data.frame() 
 
 
-saveRDS(object = X_clean, file = 'data/training_data_preds_na_omit.rds')
-saveRDS(object = Y_clean, file = 'data/training_data_target_na_omit.rds')
+saveRDS(object = X_clean_train, file = 'data/training_data_preds_na_omit.rds')
+saveRDS(object = Y_clean_train, file = 'data/training_data_target_na_omit.rds')
+
+saveRDS(object = X_clean_test, file = 'data/test_data_preds_na_omit.rds')
+saveRDS(object = Y_clean_test, file = 'data/test_data_target_na_omit.rds')
+
+
+saveRDS(object = X_clean, file = 'data/whole_data_preds_na_omit.rds')
+saveRDS(object = Y_clean, file = 'data/whole_data_target_na_omit.rds')
 
 # 
 # 

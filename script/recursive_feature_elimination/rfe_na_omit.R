@@ -41,3 +41,5 @@ source('script/recursive_feature_elimination/nnet_rfe.R')
 source('script/recursive_feature_elimination/neuralnet_rfe.R')
 source('script/recursive_feature_elimination/mars_bagEarth_rfe.R')
 source('script/recursive_feature_elimination/support_vector_machine_rfe.R')
+
+stopCluster(cl)
