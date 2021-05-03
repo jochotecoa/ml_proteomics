@@ -28,7 +28,7 @@ Y = Y_train %>%
 # sizes = seq(1, ncol(X), (ncol(X)-1)/5) %>% as.integer()
 sizes = seq(1, ncol(X), 1) %>% as.integer()
 
-path_output = '../output_rfe/data_split'
+path_output = '../output_rfe/data_split/na_omit'
 if (!dir.exists(path_output)) {
   dir.create(path_output, recursive = T)
 }
