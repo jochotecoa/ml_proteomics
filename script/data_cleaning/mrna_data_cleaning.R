@@ -81,6 +81,9 @@ if (file.exists(mrna_prot_ids_file)) {
   
 }
 
+dir.create('data/mrna')
+saveRDS(mrna_df, 'data/mrna/mrna_df.rds')
+
 mrna_unip_df = mrna_df %>% 
   rownames_to_column('ensembl_transcript_id') %>% 
   merge.data.frame(y = mrna_prot_ids, by = 'ensembl_transcript_id', all.y = T) 

@@ -107,20 +107,16 @@ if (tissue == 'cardiac') {
   
 }
 
-prot_df$sample_name = prot_df$sample_name %>% 
-  gsub(pattern = 'UNTR_The', replacement = 'UNTR') %>% 
-  gsub(pattern = 'DMSO_The', replacement = 'DMSO') %>% 
-  gsub(pattern = 'APAP', replacement = 'APA') %>% 
-  
-
-prot_df$uniprot_sample = paste(prot_df$uniprotswissprot, prot_df$sample_name, sep = '--')
-
 if (tissue == 'hepatic') {
   prot_df$sample_name = prot_df$sample_name %>% 
     gsub(pattern = 'APAP', replacement = 'APA') %>% 
     gsub(pattern = 'DMSO_The_', replacement = 'DMSO_') %>% 
     gsub(pattern = 'UNTR_The_', replacement = 'UNTR_') 
 }
+
+
+prot_df$uniprot_sample = paste(prot_df$uniprotswissprot, prot_df$sample_name, sep = '--')
+
 
 # Add protein characteristics as features ---------------------------------
 

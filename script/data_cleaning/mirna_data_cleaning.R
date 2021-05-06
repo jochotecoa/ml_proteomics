@@ -31,6 +31,10 @@ addVarsProt <- function(x, fnc_list, by_str) {
 # Identify samples with low sequencing depth ------------------------------
 
 mirna_counts = read.csv('data/miRNA/miR.Counts.csv')
+mirna_counts_tmp = read.csv('data/miRNA/miR.Counts_tmp.csv')
+mirna_counts = mirna_counts %>% 
+  merge.data.frame(mirna_counts_tmp)
+mirna_counts = mirna_counts[!grepl('miRNAtotal', rownames(mirna_counts)), ]
 mirna_counts = mirna_counts %>% 
   column_to_rownames('miRNA') %>% 
   filterSamplesBySeqDepth()
@@ -39,14 +43,19 @@ filt_cols = colnames(mirna_counts)
 
 # Remove samples with low sequencing depth --------------------------------
 
-mirna_rpm = read.csv('data/miRNA/miR.RPM.csv') %>% 
+mirna_rpm = read.csv('data/miRNA/miR.RPM.csv') 
+mirna_rpm_tmp = read.csv('data/miRNA/miR.RPM_tmp.csv')
+mirna_rpm = mirna_rpm %>% 
+  merge.data.frame(mirna_rpm_tmp)
+mirna_rpm = mirna_rpm %>% 
   column_to_rownames('miRNA')
 mirna_rpm = mirna_rpm[, filt_cols]
-
 
 # Rename samples ----------------------------------------------------------
 
 biostudies_dataset = readRDS('data/biostudies/hepatic/biostudies_hepatic.rds')
+colnames(mirna_rpm) = colnames(mirna_rpm) %>% 
+  gsub(pattern = '98', replacement = '098') # VPA samples, not ISO
 colnum_mir = sapply(biostudies_dataset$`Roche ID`, grep, colnames(mirna_rpm)) %>% unlist()
 stopifnot(!any(duplicated(colnum_mir)))
 colnum_biost = sapply(paste("^",names(colnum_mir),"$", sep=""), grep, biostudies_dataset$`Roche ID`) %>% unlist()
@@ -58,6 +67,7 @@ colnames(mirna_rpm) = colnames(mirna_rpm) %>%
   gsub(pattern = '.fastq|Con_', replacement = '')
 colnames(mirna_counts) = colnames(mirna_counts) %>% 
   gsub(pattern = '.fastq|Con_', replacement = '')
+
 
 # Creating seq_depth_mir feature ------------------------------------------
 
@@ -88,6 +98,8 @@ swiss_mir = enst_mir %>%
   merge.data.frame(refseq_swiss, 'refseq_mrna')
 swiss_mir_all = enst_mir_all %>% 
   merge.data.frame(refseq_swiss, 'refseq_mrna')
+
+mrna_df = readRDS('data/mrna/mrna_df.rds')
 
 enst_df = mrna_df %>% 
   rownames_to_column() %>% 
