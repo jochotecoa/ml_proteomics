@@ -112,7 +112,6 @@ ncol(X)
 
 mrna_prot_df_na_omit = cbind.data.frame(X, Y) %>% 
   na.omit()
-
 colnames(mrna_prot_df_na_omit)[ncol(mrna_prot_df_na_omit)] = 'proteomics_value'
 
 ld_values = X$linear_density %>% unique
@@ -144,6 +143,45 @@ X <- predict(normalization, X) %>%
 saveRDS(object = X, file = 'data/whole_data_preds.rds')
 saveRDS(object = Y, file = 'data/whole_data_target.rds')
 
+
+# Splitting clean data ----------------------------------------------------
+
+
+X_clean = mrna_prot_df_na_omit[, -grep('proteomics', colnames(mrna_prot_df_na_omit))] %>% as.data.frame()
+Y_clean = mrna_prot_df_na_omit[, grep('proteomics', colnames(mrna_prot_df_na_omit))]
+
+ld_values = X_clean$linear_density %>% unique
+ld_values_train = sample(x = ld_values, size = length(ld_values)*0.8)
+
+X_clean_train = X_clean[X_clean$linear_density %in% ld_values_train, ]
+normalization <- preProcess(X_clean_train, verbose = T, method = c("center", "scale"))
+X_clean_train <- predict(normalization, X_clean_train) %>%
+  as.data.frame()
+Y_clean_train = Y_clean[X_clean$linear_density %in% ld_values_train]
+
+X_clean_test = X_clean[!(X_clean$linear_density %in% ld_values_train), ]
+normalization <- preProcess(X_clean_test, verbose = T, method = c("center", "scale"))
+X_clean_test <- predict(normalization, X_clean_test) %>%
+  as.data.frame()
+Y_clean_test = Y_clean[!(X_clean$linear_density %in% ld_values_train)]
+
+normalization <- preProcess(X_clean, verbose = T, method = c("center", "scale"))
+X_clean <- predict(normalization, X_clean) %>% 
+  as.data.frame() 
+
+
+saveRDS(object = X_clean_train, file = 'data/training_data_preds_na_omit.rds')
+saveRDS(object = Y_clean_train, file = 'data/training_data_target_na_omit.rds')
+
+saveRDS(object = X_clean_test, file = 'data/test_data_preds_na_omit.rds')
+saveRDS(object = Y_clean_test, file = 'data/test_data_target_na_omit.rds')
+
+
+saveRDS(object = X_clean, file = 'data/whole_data_preds_na_omit.rds')
+saveRDS(object = Y_clean, file = 'data/whole_data_target_na_omit.rds')
+
+
+# Splitting clean data by samples -----------------------------------------
 
 X_clean = mrna_prot_df_na_omit[, -grep('proteomics', colnames(mrna_prot_df_na_omit))] %>% as.data.frame()
 Y_clean = mrna_prot_df_na_omit[, grep('proteomics', colnames(mrna_prot_df_na_omit))]

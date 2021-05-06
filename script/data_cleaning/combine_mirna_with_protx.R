@@ -35,7 +35,9 @@ colnames(mrna_prot_df)[grep('seq_depth', colnames(mrna_prot_df))] = 'seq_depth_m
 
 mirna_abs_cols = colnames(mrna_prot_df) %>% 
   subset(., grepl('mirna', .)) %>% 
-  subset(., !grepl('log', .))
+  subset(., !grepl('log', .)) %>% 
+  subset(., !grepl('depth', .))
+
 
 mirna_log_cols = colnames(mrna_prot_df) %>% 
   subset(., grepl('mirna', .)) %>% 
