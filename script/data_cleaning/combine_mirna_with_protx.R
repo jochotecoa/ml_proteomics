@@ -8,6 +8,9 @@ if (all(file.exists('data/miRNA/score_feats.rds'), file.exists('data/miRNA/mirna
   source('script/data_cleaning/mirna_data_cleaning.R')
 }
 
+seq_depth_mir$sample_name = seq_depth_mir$sample_name %>% 
+  gsub(pattern = 'APAP', replacement = 'APA')
+
 mrna_prot_df$uniprotswissprot = mrna_prot_df %>% 
   rownames() %>% 
   strsplit('--') %>% 

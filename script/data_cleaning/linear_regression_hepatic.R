@@ -186,7 +186,7 @@ saveRDS(object = Y_clean, file = 'data/whole_data_target_na_omit.rds')
 X_clean = mrna_prot_df_na_omit[, -grep('proteomics', colnames(mrna_prot_df_na_omit))] %>% as.data.frame()
 Y_clean = mrna_prot_df_na_omit[, grep('proteomics', colnames(mrna_prot_df_na_omit))]
 
-ld_values = X_clean$linear_density %>% unique
+ld_values = X_clean$sequencing_depth_transcriptomics %>% unique
 ld_values_train = sample(x = ld_values, size = length(ld_values)*0.8)
 
 X_clean_train = X_clean[X_clean$linear_density %in% ld_values_train, ]

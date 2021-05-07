@@ -6,6 +6,9 @@ if (all(file.exists('data/circRNA/score_feats.rds'), file.exists('data/circRNA/c
   source('script/data_cleaning/circrna_data_cleaning.R')
 }
 
+seq_depth_trx$sample_name = seq_depth_trx$sample_name %>% 
+  gsub(pattern = 'Con', replacement = '')
+
 mrna_prot_df$uniprotswissprot = mrna_prot_df %>% 
   rownames() %>% 
   strsplit('--') %>% 

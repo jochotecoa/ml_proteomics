@@ -30,6 +30,8 @@ prot_stab_feats = prot_stab_data %>%
   addVarsProt(fnc_list = c('mean', 'median', 'min', 'max', 'sd'), by_str = 'uniprotswissprot') %>% 
   unique.data.frame()
 
+prot_stab_feats = prot_stab_feats %>% naToZero
+
 dir.create('data/stability/')
 
 saveRDS(object = prot_stab_feats, file = 'data/stability/prot_stab_feats.rds')
