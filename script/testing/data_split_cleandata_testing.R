@@ -16,11 +16,15 @@ source('script/recursive_feature_elimination/nnet_rfe.R')
 
 stopCluster(cl)
 
-methods = c('bag', 'blackboost', 'bstTree', 'cubist', 'rf', 
-            'glmnet', 'lm',
-            'nnet', 'svm', 'kknn')
+methods = c(
+            'glmnet', 'lm', 'bag', 'kknn'
+            , 'rf'
+            # , 'blackboost', 'cubist' 
+            # 'bstTree', 
+            # 'nnet', 'svm'
+            )
             # 'knn', 'bagEarth', 'neuralnet')
-results = list()
+all_results = data.frame()
 
 for (method_i in methods) {
   file_rds = paste0(path_output, '/', method_i, 'Profile.rds')
@@ -34,8 +38,15 @@ for (method_i in methods) {
     prot_pred = predict(prof$fit, X_test)
   }
   
-  result = postResample(pred = prot_pred, obs = Y_test)
-  print(method_i)
-  print(result)
-  results = c(results, result)
+  test_result = postResample(pred = prot_pred, obs = Y_test) 
+  names(test_result) = paste0('test_', names(test_result))
+  train_result = prof$results[prof$results$Variables == prof$bestSubset, 2:4] %>% unlist()
+  names(train_result) = paste0('train_', names(train_result))
+  
+  all_result = c(train_result, test_result) %>% as.data.frame() %>% t()
+  rownames(all_result) = method_i
+  
+    print(method_i)
+  print(test_result)
+  all_results = rbind.data.frame(all_results, all_result)
 }
