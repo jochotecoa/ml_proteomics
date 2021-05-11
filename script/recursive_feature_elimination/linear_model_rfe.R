@@ -48,7 +48,8 @@ sizes = seq(2, ncol(X)) %>% as.integer()
                    rfeControl = rfeControl(functions = lmFuncs,
                                            verbose = T,
                                            method = 'repeatedcv', 
-                                           allowParallel = T))
+                                           allowParallel = T, 
+                                           index = folds))
 #   besub_n = lmProfile$bestSubset
 #   if (besub == besub_n) {
 #     optimum = T

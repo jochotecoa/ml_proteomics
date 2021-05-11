@@ -8,7 +8,8 @@ svmProfile <- rfe(X, Y,
                   sizes = sizes,
                   rfeControl = rfeControl(functions = caretFuncs, 
                                           verbose = T, 
-                                          method = 'repeatedcv'),
+                                          method = 'repeatedcv', 
+                                          index = folds),
                   ## pass options to train()
                   method = "svmRadial")
 file_rds = paste0(path_output, '/svmProfile.rds')

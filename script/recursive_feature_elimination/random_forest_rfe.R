@@ -9,7 +9,8 @@ rfProfile <- rfe(X, Y,
                  rfeControl = rfeControl(functions = rfFuncs,
                                          verbose = T,
                                          allowParallel = T,
-                                         method = 'repeatedcv'))
+                                         method = 'repeatedcv', 
+                                         index = folds))
 
 file_rds = paste0(path_output, '/rfProfile.rds')
 saveRDS(rfProfile, file_rds)
