@@ -10,8 +10,8 @@ registerDoParallel(cl)
 # file_X_train = 'data/training_data_preds_na_omit_by_prot.rds'
 # file_Y = 'data/training_data_target_na_omit_by_prot.rds'
 
-X = readRDS(file = 'data/whole_data_preds_na_omit.rds')
-Y = readRDS(file = 'data/whole_data_target_na_omit.rds') %>% 
+X = readRDS(file = 'data/whole_data_preds_knnimpute.rds')
+Y = readRDS(file = 'data/whole_data_target_knnimpute.rds') %>% 
   unlist()
 
  
@@ -23,7 +23,7 @@ Y = readRDS(file = 'data/whole_data_target_na_omit.rds') %>%
 # sizes = seq(1, ncol(X), (ncol(X)-1)/5) %>% as.integer()
 sizes = seq(1, ncol(X), 1) %>% as.integer()
 
-path_output = '../output_rfe/split_by_prot/na_omit'
+path_output = '../output_rfe/split_by_prot/knn_impute'
 if (!dir.exists(path_output)) {
   dir.create(path_output, recursive = T)
 }

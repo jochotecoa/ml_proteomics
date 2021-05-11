@@ -2,7 +2,7 @@
 forceLibrary('randomForest')
 
 # sizes = as.integer(seq(2, ncol(X), (ncol(X)-2)/4))[-5]
-sizes = as.integer(seq(2, 35, 1))
+sizes = as.integer(seq(2, ncol(X), (ncol(X)-2)/4))[-5]
 
 rfProfile <- rfe(X, Y,
                  sizes = sizes,

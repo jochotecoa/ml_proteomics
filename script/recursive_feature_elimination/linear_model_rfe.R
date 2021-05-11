@@ -41,7 +41,7 @@ generate_new_sizes <- function(bestSubset, ncol_X, sizes) {
 # besubs = NULL
 # optimum = F
 # sizes = as.integer(c(seq(2, .36*ncol(X), 1), seq((.36*ncol(X))+5, ncol(X)-5, 5)))
-sizes = seq(2, ncol(X)) %>% as.integer()
+sizes = seq(1, ncol(X)) %>% as.integer()
 # while (optimum == F) {
   lmProfile <- rfe(X, Y,
                    sizes = sizes,
