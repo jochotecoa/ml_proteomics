@@ -3,7 +3,8 @@
 forceLibrary(c('party', 'mboost', 'plyr', 'partykit'))
 # blackboost
 
-sizes = as.integer(seq(2, ncol(X), (ncol(X)-2)/4))[-5]
+sizes = 1:ncol(X)
+# sizes = as.integer(seq(2, ncol(X), (ncol(X)-2)/4))[-5]
 
 blackboostProfile <- rfe(X, Y,
                      sizes = sizes,

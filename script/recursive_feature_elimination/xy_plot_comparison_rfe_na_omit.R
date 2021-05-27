@@ -1,83 +1,66 @@
 library(lattice)
 library(dplyr)
 
-adaptRmseResults <- function(profile, reference) {
-  rmse_list = reference$results$RMSE
-  rmse_list[reference$results$Variables %in% profile$results$Variables] = profile$results$RMSE[profile$results$Variables %in% reference$results$Variables]
+adaptRmseResults <- function(profile, reference, metric = 'RMSE') {
+  rmse_list = unlist(reference$results[metric])
+  rmse_list[reference$results$Variables %in% profile$results$Variables] = unlist(profile$results[metric])[profile$results$Variables %in% reference$results$Variables]
   rmse_list[!reference$results$Variables %in% profile$results$Variables] = NA
-  return(rmse_list)
+  names(rmse_list) = NULL
+  rmse_list %>% return()
 }
 
-if (file.exists('../output_rfe/na_omit/rfProfile.rds')) {
-  rfProfile = readRDS('../output_rfe/na_omit/rfProfile.rds')
-} else {
-  source('script/recursive_feature_elimination/random_forest_rfe.R')
-}
-
-if (file.exists('../output_rfe/na_omit/lmProfile.rds')) {
-  lmProfile = readRDS('../output_rfe/na_omit/lmProfile.rds') %>% 
-    adaptRmseResults(rfProfile)
-} else {
-  source('script/recursive_feature_elimination/linear_model_rfe.R')
-}
-
-# if (file.exists('../output_rfe/na_omit/lmProfile2.rds')) {
-#   lmProfile2 = readRDS('../output_rfe/na_omit/lmProfile2.rds')
-# } else {
-#   source('script/recursive_feature_elimination/linear_model_rfe.R')
-# }
-
-
-
-if (file.exists('../output_rfe/na_omit/bagProfile.rds')) {
-  bagProfile = readRDS('../output_rfe/na_omit/bagProfile.rds') %>% 
-    adaptRmseResults(rfProfile)
   
-} else {
-  source('script/recursive_feature_elimination/bagged_cart_rfe.R')
-}
-
-# if (file.exists('../output_rfe/na_omit/svmProfile.rds')) {
-#   svmProfile = readRDS('../output_rfe/na_omit/svmProfile.rds') %>% 
-#     adaptRmseResults(rfProfile)
-#   
-# } else {
-#   source('script/recursive_feature_elimination/support_vector_machine_rfe.R')
-# }
+metric = 'Rsquared' # Rsquared
 
 
-blackboostProfile = readRDS('../output_rfe/na_omit/blackboostProfile.rds') %>% 
-  adaptRmseResults(rfProfile)
+glmnetProfile = readRDS('../output_rfe/split_by_sample/na_omit/glmnetProfile.rds') 
 
-bstTreeProfile = readRDS('../output_rfe/na_omit/bstTreeProfile.rds') %>% 
-  adaptRmseResults(rfProfile)
+Generalized_linear_model = glmnetProfile %>% 
+  adaptRmseResults(glmnetProfile, metric = metric)
 
-glmnetProfile = readRDS('../output_rfe/na_omit/glmnetProfile.rds') %>% 
-  adaptRmseResults(rfProfile)
+Linear_model = readRDS('../output_rfe/split_by_sample/na_omit/lmProfile.rds') %>% 
+  adaptRmseResults(glmnetProfile, metric = metric)
 
-nnetProfile = readRDS('../output_rfe/na_omit/nnetProfile.rds') %>% 
-  adaptRmseResults(rfProfile)
+Bagged_trees = readRDS('../output_rfe/split_by_sample/na_omit/bagProfile.rds') %>% 
+  adaptRmseResults(glmnetProfile, metric = metric)
 
-cubistProfile = readRDS('../output_rfe/na_omit/cubistProfile.rds') %>% 
-  adaptRmseResults(rfProfile)
+K_nearest_neighbours = readRDS('../output_rfe/split_by_sample/na_omit/kknnProfile.rds') %>% 
+  adaptRmseResults(glmnetProfile, metric = metric)
+    
+Random_forest = readRDS('../output_rfe/split_by_sample/na_omit/rfProfile.rds') %>% 
+  adaptRmseResults(glmnetProfile, metric = metric)
+  
+Blackboost = readRDS('../output_rfe/split_by_prot/na_omit/blackboostProfile.rds') %>% 
+  adaptRmseResults(glmnetProfile, metric = metric)
 
-kknnProfile = readRDS('../output_rfe/na_omit/kknnProfile.rds') %>% 
-  adaptRmseResults(rfProfile)
+Cubist = readRDS('../output_rfe/split_by_sample/na_omit/cubistProfile.rds') %>% 
+  adaptRmseResults(glmnetProfile, metric = metric)
+
+Support_vector_machines = readRDS('../output_rfe/split_by_sample/na_omit/svmProfile.rds') %>% 
+  adaptRmseResults(glmnetProfile, metric = metric)
+
+Boosted_trees = readRDS('../output_rfe/split_by_sample/na_omit/bstTreeProfile.rds') %>% 
+  adaptRmseResults(glmnetProfile, metric = metric)
+
+Neural_networks = readRDS('../output_rfe/split_by_sample/na_omit/nnetProfile.rds') %>% 
+  adaptRmseResults(glmnetProfile, metric = metric)
+
+
 
 
 
 png('output/xyplot_rfe_na_omit.png', width = 1024, height = 1024)
-xyplot(lmProfile + 
-         rfProfile$results$RMSE + 
-         bagProfile +
-         # svmProfile +
-         bstTreeProfile +
-         cubistProfile +
-         glmnetProfile +
-         kknnProfile +
+xyplot(Generalized_linear_model + 
+         Linear_model +
+         Bagged_trees +
+         K_nearest_neighbours +
+         Random_forest +
+         Blackboost +
+         Cubist +
          # nnetProfile +
-         blackboostProfile ~
-         rfProfile$results$Variables, xlab = 'Number of Variables', ylab = 'Root-mean-square error (RMSE)',
+         Support_vector_machines +
+         Boosted_trees ~
+         glmnetProfile$results$Variables, xlab = 'Number of Variables', ylab = metric,
        type = c("g", "p", "l"),
        auto.key = TRUE)
 dev.off()

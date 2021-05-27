@@ -1,8 +1,8 @@
 # source('script/recursive_feature_elimination/load_data_rfe.R')
 forceLibrary('randomForest')
 
+sizes = 1:ncol(X)
 # sizes = as.integer(seq(2, ncol(X), (ncol(X)-2)/4))[-5]
-sizes = as.integer(seq(2, ncol(X), (ncol(X)-2)/4))[-5]
 
 rfProfile <- rfe(X, Y,
                  sizes = sizes,
