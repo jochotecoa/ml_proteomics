@@ -1,17 +1,19 @@
 # source('script/recursive_feature_elimination/load_data_rfe.R')
 forceLibrary('randomForest')
 
-sizes = 1:ncol(X)
-# sizes = as.integer(seq(2, ncol(X), (ncol(X)-2)/4))[-5]
+Xi = X[,-grep('seq_depth_mirna', colnames(X)), F]
 
-rfProfile <- rfe(X, Y,
+stopifnot(ncol(Xi)<ncol(X))
+
+rfProfile <- rfe(Xi, Y,
                  sizes = sizes,
                  rfeControl = rfeControl(functions = rfFuncs,
-                                         verbose = T,
-                                         allowParallel = T,
                                          method = 'repeatedcv', 
-                                         index = folds))
+                                         repeats = repeats,
+                                         verbose = T,
+                                         index = folds,
+                                         allowParallel = T))
 
-file_rds = paste0(path_output, '/rfProfile.rds')
+file_rds = paste0(path_output, '/rfProfile_repeatedcv_wout_seq_depth_mirna.rds')
 saveRDS(rfProfile, file_rds)
 # stopCluster(cl)

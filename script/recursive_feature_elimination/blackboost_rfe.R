@@ -14,7 +14,7 @@ blackboostProfile <- rfe(X, Y,
                                              index = folds),
                      ## pass options to train()
                      method = "blackboost")
-file_rds = paste0(path_output, '/blackboostProfile.rds')
+file_rds = paste0(path_output, '/blackboostProfile_wout_TPM_value_mean_log2.rds')
 saveRDS(blackboostProfile, file_rds)
 
 # stopCluster(cl)

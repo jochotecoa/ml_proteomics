@@ -2,7 +2,7 @@
 source('script/functions/functions_JOA.R')
 forceLibrary(c('mlbench', 'caret', 'doParallel', 'dplyr', 'RANN'))
 
-cl <- makePSOCKcluster(5)
+cl <- makePSOCKcluster(15)
 registerDoParallel(cl)
 # load the data
 

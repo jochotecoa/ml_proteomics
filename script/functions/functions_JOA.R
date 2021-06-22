@@ -451,11 +451,11 @@ addVarsProt <- function(x, fnc_list, by_str) {
   return(df)
 }
 
-getSubOptVars <- function(prof) {
-  rmses = prof$results$RMSE
-  vars = prof$results$Variables
+getSubOptVars <- function(results) {
+  rmses = results$RMSE
+  vars = results$Variables
   
-  opt_error = min(rmses) + (max(rmses) - min(rmses))/10
-  opt_vars = prof$results$Variables[prof$results$RMSE < opt_error][1]
+  opt_error = min(rmses) + diff(range(rmses)) /10
+  opt_vars = results$Variables[results$RMSE < opt_error][1]
   return(opt_vars)
 }
