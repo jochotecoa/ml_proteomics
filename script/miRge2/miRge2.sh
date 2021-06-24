@@ -8,9 +8,9 @@
 # 	ipath="/ngs-data/data/hecatos/${tissue}/${comp}/miRNA/"
 # fi
 
-ipath="/ngs-data/data/hecatos/${tissue}/${comp}/miRNA/fastq/"
+# ipath="/ngs-data/data/hecatos/${tissue}/${comp}/miRNA/"
 ppath="/share/tools/miRge2/bin/miRge2.0"
-opath="/ngs-data/analysis/hecatos/juantxo/miRNA/miRge2-2021/${comp}"
+opath="/ngs-data/analysis/hecatos/juantxo/miRNA/miRge2-2021/${tissue}/${comp}"
 newfiles=true
 ##### Save all files in a variable, get a string where all file paths are connected by commas
 DATE1=$(date +%s)
@@ -23,7 +23,7 @@ mkdir -p ${opath}
 cd ${opath}
 echo "${ppath} annotate -s ${ipath}/*.fastq -d miRBase -pb /share/tools/bowtie-1.1.1/ -lib /share/tools/miRge2/sp -sp human -ad illumina -gff -cpu 3"
 # ${ppath} annotate --adapter illumina --species human --diff-isomirs --SampleFiles ${cpath}
-${ppath} annotate -s ${ipath}/*.fastq -d miRBase -pb /share/tools/bowtie-1.1.1/ -lib /share/tools/miRge2/sp -sp human -ad illumina -gff -cpu 3
+${ppath} annotate -s ${ipath}/*.fastq -d miRBase -pb /share/tools/bowtie-1.1.1/ -lib /share/tools/miRge2/sp -sp human -ad illumina -gff -cpu 24
 echo "miRge done, lasted ${dur2}s, time to rezip!"
 if ${newfiles}; then
   cd ${ipath}

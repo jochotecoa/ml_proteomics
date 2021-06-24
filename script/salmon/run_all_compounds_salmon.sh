@@ -3,8 +3,8 @@ trimmed_dir="trimmed_reads"
 # dose=("The" "Tox")
 dose=("The")
 
-timeTHE=("000" "002" "008" "024" "072" "168" "240" "336")
-# timeTHE=("000")
+# timeTHE=("000" "002" "008" "024" "072" "168" "240" "336")
+timeTHE=("002" "008" "024" "072" "168" "240" "336")
 # timeTOX=("002" "008" "024" "072" "168" "240")
 
 replicates=("1" "2" "3")
@@ -12,8 +12,11 @@ replicates=("1" "2" "3")
 # . ./salmon_APA.sh Acetaminophen APA
 # . ./salmon.sh Azathioprine AZA
 # . ./salmon.sh Con_0.1_DMSO ConDMSO CONTROL
-. ./salmon.sh Con_UNTR ConUNTR CONTROL
-. ./salmon.sh Con_0.1_DMSO con_DF2 CONTROL
+. ./script/salmon/salmon.sh Con_UNTR ConUNTR CONTROL
+
+timeTHE=("000" "002" "008" "024" "072" "168" "240" "336")
+
+. ./script/salmon/salmon.sh Con_0.1_DMSO ConDMSO CONTROL
 
 # . ./salmon.sh Cyclosporin CYC
 # . ./salmon.sh Diclofenac DIC
