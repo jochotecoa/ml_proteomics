@@ -35,6 +35,14 @@ if (!file.exists(paste0('data/biostudies/', tissue, '/biostudies_', tissue, '.rd
 files_rocheid = readRDS(paste0('data/biostudies/', tissue, '/biostudies_', tissue, '.rds')) %>% 
   as.data.frame() 
 
+if (Tissue == 'Cardiac') {
+  a = files_rocheid[grep('DF2_The_002', files_rocheid$Files), ]
+  b = a[a$`Roche ID` %in% 958:960, ]
+  files_rocheid = files_rocheid[-as.numeric(rownames(b)), ]
+  
+}
+
+
 colnames(prot_df)[unlist(files_rocheid$colnum)] = files_rocheid$Files
 
 colnames(prot_df) = 
@@ -103,10 +111,14 @@ colnames(prot_df)[2:3] = c('sample_name', 'proteomics_value')
 if (tissue == 'cardiac') {
   prot_df$sample_name = prot_df$sample_name %>% 
     gsub(pattern = 'DF2_The', replacement = 'DF2')
+  prot_df$sample_name = prot_df$sample_name %>% 
+    gsub(pattern = 'DMSO_The', replacement = 'DMSO')
+  prot_df$sample_name = prot_df$sample_name %>% 
+    gsub(pattern = 'UNTR_The', replacement = 'UNTR')
   
-  # Not have transcrx quantification yet
-  prot_df = prot_df %>% 
-    dplyr::filter(!grepl(pattern = 'DMSO|UNTR', x = sample_name))
+  # # Not have transcrx quantification yet
+  # prot_df = prot_df %>% 
+  #   dplyr::filter(!grepl(pattern = 'DMSO|UNTR', x = sample_name))
   
 }
 
