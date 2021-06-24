@@ -52,6 +52,8 @@ if (tissue == 'cardiac') {
     paste0('_e2')
 }
 
+files_rocheid = files_rocheid %>% 
+  unique.data.frame()
 
 files_rocheid$colnum = files_rocheid$`Roche ID` %>% 
   paste0('_', .) %>% 
@@ -72,14 +74,25 @@ files_rocheid$len = files_rocheid$colnum %>%
 
 files_rocheid$colnum[files_rocheid$len == 0] = 
   files_rocheid$`Roche ID`[files_rocheid$len == 0] %>% 
-  paste0('_', ., '_') %>% 
+  paste0('_0', .) %>% 
   as.data.frame() %>% 
   apply(MARGIN = 1, FUN = grep, colnames(prot_df)) 
 
 files_rocheid$len = files_rocheid$colnum %>% 
   sapply(length)
 
-colnum_dupl = files_rocheid$colnum %>% duplicated %>% files_rocheid$colnum[.]
+if (tissue == 'hepatic') {
+  files_rocheid$colnum[files_rocheid$len == 0] = 
+    files_rocheid$`Roche ID`[files_rocheid$len == 0] %>% 
+    paste0('_', ., '_') %>% 
+    as.data.frame() %>% 
+    apply(MARGIN = 1, FUN = grep, colnames(prot_df)) 
+  
+  files_rocheid$len = files_rocheid$colnum %>% 
+    sapply(length)
+}
+
+colnum_dupl = files_rocheid$colnum[files_rocheid$len != 0] %>% duplicated %>% files_rocheid$colnum[files_rocheid$len != 0][.] %>% unlist
 
 stopifnot(length(colnum_dupl) == 0)
 

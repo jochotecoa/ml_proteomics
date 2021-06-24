@@ -3,6 +3,9 @@
 Tissue = tools::toTitleCase(tissue)
 
 prot_dir = paste0('/ngs-data/data/hecatos/', Tissue, '/t0_controls/Protein/')
+if (Tissue == 'Cardiac') {
+  prot_dir = paste0('/ngs-data/data/hecatos/', Tissue, '/t0_controls_ML/Protein/')
+}
 
 prot_df = mergeFiles(by_col = 'Row.Names', path = prot_dir, header = T, 
                      fill = F, sep = '\t', all_true = T)

@@ -42,6 +42,7 @@ colnames(mrna_df) = colnames(mrna_df) %>%
   gsub(pattern = '/quant.sf|_quant|TPM_', replacement = '') %>% 
   gsub(pattern = '/', replacement = '')
 
+mrna_df = mrna_df[colnames(mrna_df_counts)]
 
 rownames(mrna_df) = rownames(mrna_df) %>% 
   gsub('\\..*', '', .) 
