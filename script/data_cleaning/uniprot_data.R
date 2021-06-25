@@ -2,9 +2,13 @@ prot_df$uniprotswissprot %>% unique %>%
   write.table('../prot_ids.txt', row.names=F, col.names=F, quote=F)
 
 # Input your protein list in UniProt and select the desired features
+if (tissue = 'hepatic') {
+  uniprot.yourlist <- read.delim2("data/uniprot-yourlist M202104068471C63D39733769F8E060B506551E121ABF7EE(1).tab")
+}
 
-uniprot.yourlist <- read.delim2("data/uniprot-yourlist M202104068471C63D39733769F8E060B506551E121ABF7EE(1).tab")
-
+if (tissue = 'cardiac') {
+  uniprot.yourlist <- read.delim2('uniprot-yourlist_M20210625_cardiac.tab')
+}
 uniprot.yourlist_ori = uniprot.yourlist
 
 
@@ -87,4 +91,4 @@ uniprot.yourlist = uniprot.yourlist %>%
 
 uniprot.yourlist$linear_density = uniprot.yourlist$Mass / uniprot.yourlist$Length
 
-saveRDS(object = uniprot.yourlist, file = 'data/uniprot_yourlist.rds')
+saveRDS(object = uniprot.yourlist, file = paste0('data/uniprot_yourlist', tissue, '.rds'))
