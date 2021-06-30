@@ -29,5 +29,5 @@ mrna_prot_df$strand_median = mrna_prot_df$strand_median %>% as.factor()
 mrna_prot_df$strand_min = mrna_prot_df$strand_min %>% as.factor()
 mrna_prot_df$strand_max = mrna_prot_df$strand_max %>% as.factor()
 
-saveRDS(object = mrna_prot_df, file = 'data/whole_raw_dataset.rds')
+# saveRDS(object = mrna_prot_df, file = paste0('data/whole_raw_dataset', tissue, '.rds'))
 

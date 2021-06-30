@@ -35,12 +35,12 @@ if (!file.exists(paste0('data/biostudies/', tissue, '/biostudies_', tissue, '.rd
 files_rocheid = readRDS(paste0('data/biostudies/', tissue, '/biostudies_', tissue, '.rds')) %>% 
   as.data.frame() 
 
-if (Tissue == 'Cardiac') {
-  a = files_rocheid[grep('DF2_The_002', files_rocheid$Files), ]
-  b = a[a$`Roche ID` %in% 958:960, ]
-  files_rocheid = files_rocheid[-as.numeric(rownames(b)), ]
-  
-}
+# if (Tissue == 'Cardiac') {
+#   a = files_rocheid[grep('DF2_The_002', files_rocheid$Files), ]
+#   b = a[a$`Roche ID` %in% 958:960, ]
+#   files_rocheid = files_rocheid[-as.numeric(rownames(b)), ]
+#   
+# }
 
 
 colnames(prot_df)[unlist(files_rocheid$colnum)] = files_rocheid$Files
@@ -135,11 +135,13 @@ prot_df$uniprot_sample = paste(prot_df$uniprotswissprot, prot_df$sample_name, se
 
 # Add protein characteristics as features ---------------------------------
 
-if (file.exists('data/uniprot_yourlist.rds')) {
-  uniprot_yourlist = readRDS('data/uniprot_yourlist.rds')
+uniprot_out_file = paste0('data/uniprot_output/uniprot_yourlist_', tissue, '.rds')
+
+if (file.exists(uniprot_out_file)) {
+  uniprot_yourlist = readRDS(uniprot_out_file)
 } else {
   source('script/data_cleaning/uniprot_data.R')
-  uniprot_yourlist = readRDS('data/uniprot_yourlist.rds')
+  uniprot_yourlist = readRDS(uniprot_out_file)
 }
 
 prot_df = prot_df %>% 

@@ -35,10 +35,19 @@ all(unique(prot_df$sample_name) %in% unique(mrna_unip_df$sample_name)) %>%
 # unique(prot_df$sample_name)[!(unique(prot_df$sample_name) %in% unique(mrna_unip_df$sample_name))]
 
 noprotsamples = unique(mrna_unip_df$sample_name)[!(unique(mrna_unip_df$sample_name) %in% unique(prot_df$sample_name))]
-warning(paste(paste0(noprotsamples, collapse = ', '), 'did not have proteomics samples, only transcriptomics'))
-mrna_unip_df = mrna_unip_df %>% 
-  dplyr::filter(!grepl(pattern = paste0(noprotsamples, collapse = '|'), sample_name))
+if (length(noprotsamples) > 0) {
+  warning(paste(paste0(noprotsamples, collapse = ', '), 'did not have proteomics samples, only transcriptomics'))
+  mrna_unip_df = mrna_unip_df %>% 
+    dplyr::filter(!grepl(pattern = paste0(noprotsamples, collapse = '|'), sample_name))
+}
 
+notranscrsamples = unique(prot_df$sample_name)[!(unique(prot_df$sample_name) %in% unique(mrna_unip_df$sample_name))]
+if (length(notranscrsamples) > 0) {
+  warning(paste(paste0(notranscrsamples, collapse = ', '), 'did not have transcriptomics samples, only proteomics'))
+  prot_df = prot_df %>% 
+    dplyr::filter(!grepl(pattern = paste0(notranscrsamples, collapse = '|'), sample_name))
+  
+}
 
 # mrna_unip_df_sum = mrna_unip_df[, 'TPM_value'] %>% 
 #   aggregate.data.frame(by = list(uniprot_sample = mrna_unip_df$uniprot_sample), FUN = sum, na.rm = T)
@@ -76,3 +85,4 @@ mrna_unip_df = merge.data.frame(mrna_unip_df, mrna_unip_df_median, 'uniprotswiss
 mrna_unip_df[, 'TPM_value_sd'] = mrna_unip_df[, 'TPM_value_sd'] %>% 
   naToZero()
 mrna_unip_df[, 'TPM_value_sd_log2'][is.na(mrna_unip_df[, 'TPM_value_sd_log2'])] = log2(2e-06)
+

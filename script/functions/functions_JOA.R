@@ -459,3 +459,50 @@ getSubOptVars <- function(results) {
   opt_vars = results$Variables[results$RMSE < opt_error][1]
   return(opt_vars)
 }
+
+mergeFilesCsv = function(files_patt =  '.', by_col = 'Name', 
+                      row_names = F, progr_bar = T, path = path, all_true = F, 
+                      recursive = F, ...) {
+  if (progr_bar) {
+    forceLibrary('pbmcapply')
+  }
+  forceLibrary('dplyr')
+  files = list.files(pattern = files_patt, recursive = recursive, path = path, 
+                     full.names = T, include.dirs = F)
+  # files = files[!grepl('total', files)]
+  # files = files[-1]
+  print(paste('Number of files found:', length(files)))
+  file = files[1]
+  stopifnot(file.exists(file))
+  voom_file = read.table(file, stringsAsFactors = F, ...)
+  if (row_names) {
+    voom_file = voom_file %>% tibble::rownames_to_column() %>% 
+      dplyr::select(rowname, everything())
+    by_col = 'rowname'
+  }
+  colnames(voom_file)[-1] = paste(colnames(voom_file)[-1], file, sep = '_')
+  big_quant_voom = voom_file
+  if (progr_bar) {
+    pb = progressBar(max = length(files[-1]))
+  } else {
+    p = progress_estimated(length(files[-1]))
+  }
+  for (file in files[-1]) {
+    voom_file = read.table(file, stringsAsFactors = F, ...)
+    if (row_names) {
+      voom_file = voom_file %>% tibble::rownames_to_column() %>% 
+        dplyr::select(rowname, everything())
+    }
+    colnames(voom_file)[-1] = paste(colnames(voom_file)[-1], file, sep = '_')
+    big_quant_voom = merge.data.frame(big_quant_voom, voom_file, by = by_col, all = all_true)
+    if (progr_bar) {
+      setTxtProgressBar(pb, grep(file, files[-1]))
+    } else {
+      p$tick()$print()
+    }
+  }
+  if (progr_bar) {
+    close(pb)
+  }
+  return(big_quant_voom)
+} 

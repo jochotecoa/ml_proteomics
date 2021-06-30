@@ -20,6 +20,9 @@ if (tissue == 'cardiac') {
   mrna_unip_df = mrna_unip_df %>% 
     dplyr::filter(!grepl(pattern = 'DAU', x = sample_name))
   
+  mrna_unip_df$sample_name = mrna_unip_df$sample_name %>% 
+    gsub(pattern = 'Con', replacement = '')
+  
 }
 
 if (tissue == 'hepatic') {

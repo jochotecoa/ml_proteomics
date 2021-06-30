@@ -2,12 +2,12 @@ prot_df$uniprotswissprot %>% unique %>%
   write.table('../prot_ids.txt', row.names=F, col.names=F, quote=F)
 
 # Input your protein list in UniProt and select the desired features
-if (tissue = 'hepatic') {
+if (tissue == 'hepatic') {
   uniprot.yourlist <- read.delim2("data/uniprot-yourlist M202104068471C63D39733769F8E060B506551E121ABF7EE(1).tab")
 }
 
-if (tissue = 'cardiac') {
-  uniprot.yourlist <- read.delim2('uniprot-yourlist_M20210625_cardiac.tab')
+if (tissue == 'cardiac') {
+  uniprot.yourlist <- read.delim2('data/uniprot_output/uniprot-yourlist_M20210625_cardiac.tab')
 }
 uniprot.yourlist_ori = uniprot.yourlist
 
@@ -50,7 +50,7 @@ uniprot.yourlist = uniprot.yourlist %>%
 # Remove useless features -------------------------------------------------
 
 
-uniprot.yourlist = uniprot.yourlist[, !(colnames(uniprot.yourlist) %in% c('Fragment', 'RNA.editing', 'Sequence.uncertainty', 'Mass.spectrometry', 'Non.adjacent.residues', 'Sequence'))]
+uniprot.yourlist = uniprot.yourlist[, !(colnames(uniprot.yourlist) %in% c('Entry.name', 'Status', 'Fragment', 'Gene.names', 'RNA.editing', 'Sequence.uncertainty', 'Mass.spectrometry', 'Non.adjacent.residues', 'Sequence'))]
 
 
 # Check the classes of the features ---------------------------------------
