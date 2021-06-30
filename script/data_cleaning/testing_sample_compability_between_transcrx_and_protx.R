@@ -29,8 +29,6 @@ addVarsProt <- function(x, fnc_list, by_str) {
 
 
 
-all(unique(prot_df$sample_name) %in% unique(mrna_unip_df$sample_name)) %>% 
-  stopifnot('sample names different between transcrx and protx'= .)
 
 # unique(prot_df$sample_name)[!(unique(prot_df$sample_name) %in% unique(mrna_unip_df$sample_name))]
 
@@ -48,6 +46,10 @@ if (length(notranscrsamples) > 0) {
     dplyr::filter(!grepl(pattern = paste0(notranscrsamples, collapse = '|'), sample_name))
   
 }
+
+all(unique(prot_df$sample_name) %in% unique(mrna_unip_df$sample_name)) %>% 
+  stopifnot('sample names different between transcrx and protx'= .)
+
 
 # mrna_unip_df_sum = mrna_unip_df[, 'TPM_value'] %>% 
 #   aggregate.data.frame(by = list(uniprot_sample = mrna_unip_df$uniprot_sample), FUN = sum, na.rm = T)

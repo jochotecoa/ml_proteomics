@@ -30,14 +30,21 @@ addVarsProt <- function(x, fnc_list, by_str) {
 
 # Identify samples with low sequencing depth ------------------------------
 
-if () {
+if (tissue == 'cardiac') {
+  mir_dir = '/ngs-data/analysis/hecatos/juantxo/miRNA/miRge2-2021/Cardiac/t0_controls_ML/miRge_altoguether/'
+  
+  mirna_counts = mergeFilesCsv(files_patt = 'miR.Counts', by_col = 'miRNA', path = mir_dir, all_true = T, recursive = T)
+  
+  colnames(mirna_counts) = colnames(mirna_counts) %>% 
+    gsub(pattern='_R.*|.fastq.*', replacement='')  
+} else {
+  mirna_counts = read.csv('data/miRNA/miR.Counts.csv')
+  mirna_counts_tmp = read.csv('data/miRNA/miR.Counts_tmp.csv')
+  mirna_counts = mirna_counts %>% 
+    merge.data.frame(mirna_counts_tmp)
   
 }
 
-mirna_counts = read.csv('data/miRNA/miR.Counts.csv')
-mirna_counts_tmp = read.csv('data/miRNA/miR.Counts_tmp.csv')
-mirna_counts = mirna_counts %>% 
-  merge.data.frame(mirna_counts_tmp)
 mirna_counts = mirna_counts[!grepl('miRNAtotal', rownames(mirna_counts)), ]
 mirna_counts = mirna_counts %>% 
   column_to_rownames('miRNA') %>% 
@@ -47,40 +54,54 @@ filt_cols = colnames(mirna_counts)
 
 # Remove samples with low sequencing depth --------------------------------
 
-mirna_rpm = read.csv('data/miRNA/miR.RPM.csv') 
-mirna_rpm_tmp = read.csv('data/miRNA/miR.RPM_tmp.csv')
-mirna_rpm = mirna_rpm %>% 
-  merge.data.frame(mirna_rpm_tmp)
+if (tissue == 'cardiac') {
+  mir_dir = '/ngs-data/analysis/hecatos/juantxo/miRNA/miRge2-2021/Cardiac/t0_controls_ML/miRge_altoguether/'
+  
+  mirna_rpm = mergeFilesCsv(files_patt = 'miR.RPM', by_col = 'miRNA', path = mir_dir, all_true = T, recursive = T)
+  
+  colnames(mirna_rpm) = colnames(mirna_rpm) %>% 
+    gsub(pattern='_R.*|.fastq.*', replacement='')  
+} else {
+  mirna_rpm = read.csv('data/miRNA/miR.RPM.csv') 
+  mirna_rpm_tmp = read.csv('data/miRNA/miR.RPM_tmp.csv')
+  mirna_rpm = mirna_rpm %>% 
+    merge.data.frame(mirna_rpm_tmp)
+  
+}
+
 mirna_rpm = mirna_rpm %>% 
   column_to_rownames('miRNA')
 mirna_rpm = mirna_rpm[, filt_cols]
 
 # Rename samples ----------------------------------------------------------
 
-biostudies_dataset = readRDS('data/biostudies/hepatic/biostudies_hepatic.rds')
-colnames(mirna_rpm) = colnames(mirna_rpm) %>% 
-  gsub(pattern = '98', replacement = '098') # VPA samples, not ISO
-colnum_mir = sapply(biostudies_dataset$`Roche ID`, grep, colnames(mirna_rpm)) %>% unlist()
-stopifnot(!any(duplicated(colnum_mir)))
-colnum_biost = sapply(paste("^",names(colnum_mir),"$", sep=""), grep, biostudies_dataset$`Roche ID`) %>% unlist()
-stopifnot(!any(duplicated(colnum_biost)))
-colnames(mirna_rpm)[colnum_mir] = biostudies_dataset$Files[colnum_biost]
-colnames(mirna_counts)[colnum_mir] = biostudies_dataset$Files[colnum_biost]
+if (tissue == 'hepatic') {
+  biostudies_dataset = readRDS(paste0('data/biostudies/', tissue, '/biostudies_', tissue, '.rds'))
+  colnames(mirna_rpm) = colnames(mirna_rpm) %>% 
+    gsub(pattern = '98', replacement = '098') # VPA samples, not ISO
+  colnum_mir = sapply(biostudies_dataset$`Roche ID`, grep, colnames(mirna_rpm)) %>% unlist()
+  stopifnot(!any(duplicated(colnum_mir)))
+  colnum_biost = sapply(paste("^",names(colnum_mir),"$", sep=""), grep, biostudies_dataset$`Roche ID`) %>% unlist()
+  stopifnot(!any(duplicated(colnum_biost)))
+  colnames(mirna_rpm)[colnum_mir] = biostudies_dataset$Files[colnum_biost]
+  colnames(mirna_counts)[colnum_mir] = biostudies_dataset$Files[colnum_biost]
+  
+}
+
 
 colnames(mirna_rpm) = colnames(mirna_rpm) %>% 
   gsub(pattern = '.fastq|Con_', replacement = '')
 colnames(mirna_counts) = colnames(mirna_counts) %>% 
   gsub(pattern = '.fastq|Con_', replacement = '')
 
-
 # Creating seq_depth_mir feature ------------------------------------------
 
 seq_depth_mir = mirna_counts %>% 
-  colSums() %>% 
+  colSums(na.rm = T) %>% 
   data.frame(seq_depth = .) %>% 
   rownames_to_column('sample_name')
 
-saveRDS(seq_depth_mir, 'data/miRNA/seq_depth_mir.rds')
+saveRDS(seq_depth_mir, paste0('data/miRNA/seq_depth_mir', tissue, '.rds'))
 
 # Connect the miR IDs with the ENSTs --------------------------------------
 

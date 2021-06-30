@@ -474,7 +474,7 @@ mergeFilesCsv = function(files_patt =  '.', by_col = 'Name',
   print(paste('Number of files found:', length(files)))
   file = files[1]
   stopifnot(file.exists(file))
-  voom_file = read.table(file, stringsAsFactors = F, ...)
+  voom_file = read.csv(file, stringsAsFactors = F, ...)
   if (row_names) {
     voom_file = voom_file %>% tibble::rownames_to_column() %>% 
       dplyr::select(rowname, everything())
@@ -488,7 +488,7 @@ mergeFilesCsv = function(files_patt =  '.', by_col = 'Name',
     p = progress_estimated(length(files[-1]))
   }
   for (file in files[-1]) {
-    voom_file = read.table(file, stringsAsFactors = F, ...)
+    voom_file = read.csv(file, stringsAsFactors = F, ...)
     if (row_names) {
       voom_file = voom_file %>% tibble::rownames_to_column() %>% 
         dplyr::select(rowname, everything())
