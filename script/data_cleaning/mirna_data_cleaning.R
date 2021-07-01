@@ -124,7 +124,7 @@ swiss_mir = enst_mir %>%
 swiss_mir_all = enst_mir_all %>% 
   merge.data.frame(refseq_swiss, 'refseq_mrna')
 
-mrna_df = readRDS('data/mrna/mrna_df.rds')
+# mrna_df = readRDS('data/mrna/mrna_df.rds')
 
 enst_df = mrna_df %>% 
   rownames_to_column() %>% 
@@ -162,8 +162,8 @@ colnames(score_feats_all)[-1] = paste0(colnames(score_feats_all)[-1], '_all')
 score_feats = score_feats[score_feats$uniprotswissprot != '', , F]
 score_feats_all = score_feats_all[score_feats_all$uniprotswissprot != '', , F]
 
-saveRDS(score_feats, 'data/miRNA/score_feats.rds')
-saveRDS(score_feats_all, 'data/miRNA/score_feats_all.rds')
+saveRDS(score_feats, paste0('data/miRNA/score_feats', tissue, '.rds'))
+saveRDS(score_feats_all, paste0('data/miRNA/score_feats_all', tissue, '.rds'))
 
 
 mirna_feats = mirna_swiss %>% 
@@ -173,8 +173,8 @@ mirna_feats_all = mirna_swiss_all %>%
   dplyr::select(!c(miRBase_ID, refseq_mrna, score, ensembl_transcript_id)) %>% 
   addVarsProt(fnc_list = c('mean', 'median', 'min', 'max', 'sum', 'sd'), by_str = 'uniprotswissprot')
 
-saveRDS(mirna_feats, 'data/miRNA/mirna_feats.rds')
-saveRDS(mirna_feats_all, 'data/miRNA/mirna_feats_all.rds')
+saveRDS(mirna_feats, paste0('data/miRNA/mirna_feats_', tissue, '.rds'))
+saveRDS(mirna_feats_all, paste0('data/miRNA/mirna_feats_all_', tissue, '.rds'))
 
 mirna_feats_melt = mirna_feats %>% 
   melt()
@@ -245,5 +245,5 @@ mirna_feats_dcast_all[mirna_feats_dcast_all == -Inf] = log2(2e-06)
 
 
 
-saveRDS(mirna_feats_dcast, 'data/miRNA/mirna_feats_dcast.rds')
-saveRDS(mirna_feats_dcast_all, 'data/miRNA/mirna_feats_dcast_all.rds')
+saveRDS(mirna_feats_dcast, paste0('data/miRNA/mirna_feats_dcast_', tissue, '.rds'))
+saveRDS(mirna_feats_dcast_all, paste0('data/miRNA/mirna_feats_dcast_all_', tissue, '.rds'))

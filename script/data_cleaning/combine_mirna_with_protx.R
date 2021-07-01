@@ -1,12 +1,29 @@
-if (all(file.exists('data/miRNA/score_feats.rds'), file.exists('data/miRNA/mirna_feats_dcast.rds'))) {
-  score_feats = readRDS('data/miRNA/score_feats.rds')
-  score_feats_all = readRDS('data/miRNA/score_feats_all.rds')
-  mirna_feats_dcast = readRDS('data/miRNA/mirna_feats_dcast.rds')
-  mirna_feats_dcast_all = readRDS('data/miRNA/mirna_feats_dcast_all.rds')
-  seq_depth_mir = readRDS('data/miRNA/seq_depth_mir.rds')
-} else {
-  source('script/data_cleaning/mirna_data_cleaning.R')
+if (tissue == 'hepatic') {
+  if (all(file.exists('data/miRNA/score_feats.rds'), file.exists('data/miRNA/mirna_feats_dcast.rds'))) {
+    score_feats = readRDS('data/miRNA/score_feats.rds')
+    score_feats_all = readRDS('data/miRNA/score_feats_all.rds')
+    mirna_feats_dcast = readRDS('data/miRNA/mirna_feats_dcast.rds')
+    mirna_feats_dcast_all = readRDS('data/miRNA/mirna_feats_dcast_all.rds')
+    seq_depth_mir = readRDS('data/miRNA/seq_depth_mir.rds')
+  } else {
+    source('script/data_cleaning/mirna_data_cleaning.R')
+  }
+  
 }
+
+if (tissue == 'cardiac') {
+  if (all(file.exists(paste0('data/miRNA/score_feats', tissue, '.rds')), file.exists(paste0('data/miRNA/mirna_feats_dcast_', tissue, '.rds')))) {
+    score_feats = readRDS(paste0('data/miRNA/score_feats', tissue, '.rds'))
+    score_feats_all = readRDS(paste0('data/miRNA/score_feats_all', tissue, '.rds'))
+    mirna_feats_dcast = readRDS(paste0('data/miRNA/mirna_feats_dcast_', tissue, '.rds'))
+    mirna_feats_dcast_all = readRDS(paste0('data/miRNA/mirna_feats_dcast_all_', tissue, '.rds'))
+    seq_depth_mir = readRDS(paste0('data/miRNA/seq_depth_mir', tissue, '.rds'))
+  } else {
+    source('script/data_cleaning/mirna_data_cleaning.R')
+  }
+  
+}
+
 
 seq_depth_mir$sample_name = seq_depth_mir$sample_name %>% 
   gsub(pattern = 'APAP', replacement = 'APA')
@@ -68,6 +85,9 @@ mrna_prot_df[, mirna_score_cols][is.na(mrna_prot_df[, mirna_score_cols])] = 0
 #   setTxtProgressBar(pb_2, grep(swissprot_i, unique(mrna_prot_df$uniprotswissprot)))
 # }
 # close(pb_2)
+
+dupl_cols = mrna_prot_df %>% t %>% duplicated() %>% sum()
+stopifnot(dupl_cols == 0)
 
 mrna_prot_df = mrna_prot_df %>%  
   dplyr::select(-c(uniprotswissprot, sample_name))

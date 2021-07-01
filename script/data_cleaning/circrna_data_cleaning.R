@@ -1,8 +1,8 @@
 source('script/functions/functions_JOA.R')
 forceLibrary(c('dplyr', 'tibble', 'biomaRt', 'reshape', 'caret', 'caTools'))
 
-tissue = 'hepatic'
-compound = 't0_controls_ML'
+# tissue = 'hepatic'
+# compound = 't0_controls_ML'
 
 source('script/data_cleaning/mrna_data_cleaning.R')
 
@@ -12,7 +12,9 @@ seq_depth_trx = mrna_df_counts %>%
   rownames_to_column('sample_name')
 colnames(seq_depth_trx)[2] = 'sequencing_depth_transcriptomics'
 
-saveRDS(seq_depth_trx, 'data/seq_depth_trx.rds')
+if (!dir.exists('data/transcriptomics/')) {dir.create('data/transcriptomics/')}
+
+saveRDS(seq_depth_trx, paste0('data/transcriptomics/seq_depth_trx', tissue, '.rds'))
 
 circ_df = mrna_df %>% 
   rownames_to_column() %>% 
@@ -20,14 +22,14 @@ circ_df = mrna_df %>%
   dplyr::rename(circBase_ID = rowname)
 
 cir_mir = readRDS('../ciRmiR_unique_highsponging.rds')
-cir_mir2 = readRDS('../ciRmiR_unique_nseedfrequency.rds')
+# cir_mir2 = readRDS('../ciRmiR_unique_nseedfrequency.rds')
 
 cir_mir[, 'miRBase_ID'] = cir_mir[, 'Var1'] %>% 
   as.character() %>% 
   strsplit(' ') %>% 
   sapply('[[', 1) %>% 
   as.character()
-cir_mir2['miRBase_ID'] = cir_mir2[, 'Var1'] %>% 
+# cir_mir2['miRBase_ID'] = cir_mir2[, 'Var1'] %>% 
   as.character() %>% 
   strsplit(' ') %>% 
   sapply('[[', 1) %>% 
@@ -38,7 +40,7 @@ cir_mir['circBase_ID'] = cir_mir[, 'Var1'] %>%
   strsplit(' ') %>% 
   sapply('[[', 2) %>% 
   as.character()
-cir_mir2['circBase_ID'] = cir_mir2[, 'Var1'] %>% 
+# cir_mir2['circBase_ID'] = cir_mir2[, 'Var1'] %>% 
   as.character() %>% 
   strsplit(' ') %>% 
   sapply('[[', 2) %>% 
@@ -46,11 +48,11 @@ cir_mir2['circBase_ID'] = cir_mir2[, 'Var1'] %>%
 
 
 colnames(cir_mir)[2] = 'circ_score'
-colnames(cir_mir2)[2] = 'circ_score'
+# colnames(cir_mir2)[2] = 'circ_score'
 
-dir.create('../ml_bigdata/')
+if (!dir.exists('../ml_bigdata/')) {dir.create('../ml_bigdata/')}
 
-saveRDS(cir_mir2, '../ml_bigdata/cir_mir2.rds')
+# saveRDS(cir_mir2, paste0('../ml_bigdata/cir_mir2', tissue, '.rds'))
 
 circ_df['circBase_ID'] = circ_df[, 'circBase_ID'] %>% 
   cleanCircNames()
@@ -59,22 +61,23 @@ circ_df = circ_df[rowSums(circ_df[-1]) > 0, , F]
 
 # miRNA filtering ---------------------------------------------------------
 
-
-mirna_counts = read.csv('data/miRNA/miR.Counts.csv')
-mirna_counts = mirna_counts %>% 
-  column_to_rownames('miRNA') %>% 
-  filterSamplesBySeqDepth()
-filt_cols = colnames(mirna_counts)
-
-mirna_rpm = read.csv('data/miRNA/miR.RPM.csv') %>% 
-  column_to_rownames('miRNA')
-mirna_rpm = mirna_rpm[, filt_cols]
-mirna_rpm = mirna_rpm[rowSums(mirna_rpm) > 0, , F]
+if (tissue == 'hepatic') {
+  mirna_counts = read.csv('data/miRNA/miR.Counts.csv')
+  mirna_counts = mirna_counts %>% 
+    column_to_rownames('miRNA') %>% 
+    filterSamplesBySeqDepth()
+  filt_cols = colnames(mirna_counts)
+  
+  mirna_rpm = read.csv('data/miRNA/miR.RPM.csv') %>% 
+    column_to_rownames('miRNA')
+  mirna_rpm = mirna_rpm[, filt_cols]
+}
+mirna_rpm = mirna_rpm[rowSums(mirna_rpm, na.rm = T) > 0, , F]
 mirna_rpm = mirna_rpm %>% 
   rownames_to_column('miRBase_ID')
 
 cir_mir = cir_mir[cir_mir$miRBase_ID %in% mirna_rpm$miRBase_ID, , F]
-cir_mir2 = cir_mir2[cir_mir2$miRBase_ID %in% mirna_rpm$miRBase_ID, , F]
+# cir_mir2 = cir_mir2[cir_mir2$miRBase_ID %in% mirna_rpm$miRBase_ID, , F]
 
 
 # circRNA filtering -------------------------------------------------------
@@ -82,7 +85,7 @@ cir_mir2 = cir_mir2[cir_mir2$miRBase_ID %in% mirna_rpm$miRBase_ID, , F]
 
 
 cir_mir = cir_mir[cir_mir$circBase_ID %in% circ_df$circBase_ID, , F]
-cir_mir2 = cir_mir2[cir_mir2$circBase_ID %in% circ_df$circBase_ID, , F]
+# cir_mir2 = cir_mir2[cir_mir2$circBase_ID %in% circ_df$circBase_ID, , F]
 
 
 
@@ -126,7 +129,7 @@ swiss_mir = swiss_mir[swiss_mir$ensembl_transcript_id %in% rownames(enst_df), , 
 swiss_mir_all = swiss_mir_all[swiss_mir_all$ensembl_transcript_id %in% rownames(enst_df), , F]
 
 cir_mir = cir_mir[-1]
-cir_mir2 = cir_mir2[-1]
+# cir_mir2 = cir_mir2[-1]
 
 swiss_mir = swiss_mir %>% 
   dplyr::select(-c(refseq_mrna, ensembl_gene_id, ensembl_transcript_id, score)) %>% 
@@ -146,8 +149,8 @@ swiss_mir_all = swiss_mir_all[swiss_mir_all$uniprotswissprot %in% prot_df$unipro
 
 cir_mir = cir_mir %>% 
   merge.data.frame(swiss_mir, 'miRBase_ID')
-cir_mir2 = cir_mir2 %>% 
-  merge.data.frame(swiss_mir_all, 'miRBase_ID')
+# cir_mir2 = cir_mir2 %>% 
+  # merge.data.frame(swiss_mir_all, 'miRBase_ID')
 
 cir_mir = cir_mir %>% 
   dplyr::select(-c(miRBase_ID)) %>% 
