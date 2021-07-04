@@ -1,5 +1,5 @@
 
-if (tissue = 'hepatic') {
+if (tissue == 'hepatic') {
   if (all(file.exists('data/circRNA/score_feats.rds'), file.exists('data/circRNA/circ_feats_dcast.rds'))) {
     score_feats = readRDS('data/circRNA/score_feats.rds')
     circ_feats_dcast = readRDS('data/circRNA/circ_feats_dcast.rds')
@@ -29,36 +29,8 @@ mrna_prot_df$sample_name = mrna_prot_df %>%
   sapply('[[', 2) %>% 
   as.character()
 
-
-circ_feats_dcast$sample_name = circ_feats_dcast$uniprot_sample %>% 
-  strsplit('--') %>% 
-  sapply('[[', 2) %>% 
-  as.character()
-
-
-noprotsamples = unique(mrna_prot_df$sample_name)[!(unique(mrna_prot_df$sample_name) %in% unique(circ_feats_dcast$sample_name))]
-if (length(noprotsamples) > 0) {
-  warning(paste(paste0(noprotsamples, collapse = ', '), 'did not have proteomics samples, only transcriptomics'))
-  mrna_prot_df = mrna_prot_df %>% 
-    dplyr::filter(!grepl(pattern = paste0(noprotsamples, collapse = '|'), sample_name))
-}
-
-notranscrsamples = unique(circ_feats_dcast$sample_name)[!(unique(circ_feats_dcast$sample_name) %in% unique(mrna_prot_df$sample_name))]
-if (length(notranscrsamples) > 0) {
-  warning(paste(paste0(notranscrsamples, collapse = ', '), 'did not have transcriptomics samples, only proteomics'))
-  circ_feats_dcast = circ_feats_dcast %>% 
-    dplyr::filter(!grepl(pattern = paste0(notranscrsamples, collapse = '|'), sample_name))
-  
-}
-
-all(unique(circ_feats_dcast$sample_name) %in% unique(mrna_prot_df$sample_name)) %>% 
-  stopifnot('sample names different between transcrx and protx'= .)
-
-
-
 seq_depth_trx$sample_name = seq_depth_trx$sample_name %>% 
   gsub(pattern = 'Con', replacement = '')
-
 
 i_df = mrna_prot_df
 mrna_prot_df = i_df

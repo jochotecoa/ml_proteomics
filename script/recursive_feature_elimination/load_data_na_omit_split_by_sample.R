@@ -22,7 +22,7 @@ Y = readRDS(file = 'data/whole_data_target_na_omit.rds') %>%
 
 # sizes = seq(1, ncol(X), (ncol(X)-1)/5) %>% as.integer()
 
-path_output = '../output_rfe/split_by_sample/na_omit'
+path_output = '../output_rfe/split_by_sample/na_omit/cardiac'
 if (!dir.exists(path_output)) {
   dir.create(path_output, recursive = T)
 }

@@ -24,6 +24,8 @@ source('script/data_cleaning/combine_circrna_with_protx.R')
 
 source('script/data_cleaning/combine_prot_stability_with_protx.R')
 
+
+i_df = mrna_prot_df
 # Pre-processing ----------------------------------------------------------
 # Zero- and Near Zero-Variance Predictors
 ncol(mrna_prot_df) - 1
@@ -181,7 +183,7 @@ X_clean <- predict(normalization, X_clean) %>%
 dir.create('data/whole_data/')
 
 saveRDS(object = X_clean, file = paste0('data/whole_data/preds_na_omit_', tissue, '.rds'))
-saveRDS(object = Y_clean, file = paste('data/whole_data/target_na_omit_', tissue, '.rds'))
+saveRDS(object = Y_clean, file = paste0('data/whole_data/target_na_omit_', tissue, '.rds'))
 
 
 # Splitting clean data by samples -----------------------------------------

@@ -59,6 +59,8 @@ if (length(notranscrsamples) > 0) {
 all(unique(mirna_feats_dcast$sample_name) %in% unique(mrna_prot_df$sample_name)) %>% 
   stopifnot('sample names different between transcrx and protx'= .)
 
+mirna_feats_dcast = mirna_feats_dcast %>%  
+  dplyr::select(-c(sample_name))
 
 
 seq_depth_mir$sample_name = seq_depth_mir$sample_name %>% 
