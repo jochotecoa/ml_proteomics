@@ -92,6 +92,11 @@ X = X %>%
 
 descrCor <- cor(na.omit(X))
 highlyCor <- findCorrelation(descrCor, cutoff = .75)
+col_circ_mean = which(!colnames(X) != 'circ_mean')
+highlyCor = highlyCor[highlyCor != col_circ_mean]
+col_circ_sd = which(!colnames(X) != 'circ_sd')
+highlyCor = c(highlyCor, col_circ_sd)
+
 corrplot::corrplot(descrCor[-highlyCor, highlyCor])
 if (length(highlyCor) > 0) {
   X <- X[,-highlyCor]

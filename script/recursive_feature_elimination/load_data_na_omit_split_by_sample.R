@@ -27,7 +27,7 @@ if (!dir.exists(path_output)) {
   dir.create(path_output, recursive = T)
 }
 
-train_samples = X %>% rownames() %>% strsplit('--') %>% sapply('[[', 2)
+train_samples = X_clean %>% rownames() %>% strsplit('--') %>% sapply('[[', 2)
 
 sizes = c(1:10, seq(15, ncol(X), by = 5))
 
