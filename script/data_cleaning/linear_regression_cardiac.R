@@ -141,8 +141,8 @@ normalization <- preProcess(X, verbose = T, method = c("center", "scale", "knnIm
 X <- predict(normalization, X) %>%
   as.data.frame()
 
-saveRDS(object = X, file = 'data/whole_data_preds_knnimpute.rds')
-saveRDS(object = Y, file = 'data/whole_data_target_knnimpute.rds')
+saveRDS(object = X, file = paste0('data/whole_data_preds_knnimpute.rds'))
+saveRDS(object = Y, file = paste0('data/whole_data_target_knnimpute.rds'))
 
 
 # Splitting clean data ----------------------------------------------------
@@ -178,9 +178,10 @@ X_clean <- predict(normalization, X_clean) %>%
 # saveRDS(object = X_clean_test, file = 'data/test_data_preds_na_omit_by_prot.rds')
 # saveRDS(object = Y_clean_test, file = 'data/test_data_target_na_omit_by_prot.rds')
 
+dir.create('data/whole_data/')
 
-saveRDS(object = X_clean, file = 'data/whole_data_preds_na_omit.rds')
-saveRDS(object = Y_clean, file = 'data/whole_data_target_na_omit.rds')
+saveRDS(object = X_clean, file = paste0('data/whole_data/preds_na_omit_', tissue, '.rds'))
+saveRDS(object = Y_clean, file = paste('data/whole_data/target_na_omit_', tissue, '.rds'))
 
 
 # Splitting clean data by samples -----------------------------------------

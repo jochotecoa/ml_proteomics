@@ -3,7 +3,7 @@ forceLibrary(c('dplyr', 'tibble', 'biomaRt', 'reshape2', 'caret', 'caTools'))
 
 # circ_scores_all = cir_mir2 
 
-circ_df_stringent = readRDS('../ml_bigdata/circ_df_stringent.rds')
+circ_df_stringent = readRDS(paste0('../ml_bigdata/circ_df_stringent', tissue, '.rds'))
 
 circ_feats_str = circ_df_stringent %>% 
   dplyr::select(!c(circBase_ID)) %>% 
@@ -46,12 +46,12 @@ circ_feats_dcast[circ_feats_dcast == -Inf] = log2(2e-06)
 
 dir.create('data/circRNA')
 
-saveRDS(circ_feats_dcast, 'data/circRNA/circ_feats_dcast.rds')
+ saveRDS(circ_feats_dcast, paste0('data/circRNA/circ_feats_dcast', tissue, '.rds'))
 
 
 # Scores ------------------------------------------------------------------
 
-cir_mir = readRDS('../ml_bigdata/circ_prot_scores_stringent.rds')  
+cir_mir = readRDS(paste0('../ml_bigdata/circ_prot_scores_stringent', tissue, '.rds'))  
 
 score_per_prot = cir_mir %>% 
   dplyr::select(uniprotswissprot, circ_score)
@@ -61,4 +61,4 @@ score_feats = score_per_prot %>%
 
 score_feats = score_feats[score_feats$uniprotswissprot != '', , F]
 
-saveRDS(score_feats, 'data/circRNA/score_feats.rds')
+saveRDS(score_feats, paste0('data/circRNA/score_feats', tissue, '.rds'))

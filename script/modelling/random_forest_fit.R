@@ -6,6 +6,13 @@ sizes = 1:ncol(X)
 
 RMSE_df = data.frame()
 
+
+rfFit <- train(X, Y,
+               method = 'rf',
+               trControl  = trainControl(method = 'cv', 
+                                         index = folds))
+
+
 while (ncol(X) >= 1) {
   
   rfFit <- train(X, Y,

@@ -24,10 +24,6 @@ if (tissue == 'cardiac') {
   
 }
 
-
-seq_depth_mir$sample_name = seq_depth_mir$sample_name %>% 
-  gsub(pattern = 'APAP', replacement = 'APA')
-
 mrna_prot_df$uniprotswissprot = mrna_prot_df %>% 
   rownames() %>% 
   strsplit('--') %>% 
@@ -38,6 +34,36 @@ mrna_prot_df$sample_name = mrna_prot_df %>%
   strsplit('--') %>% 
   sapply('[[', 2) %>% 
   as.character()
+
+mirna_feats_dcast$sample_name = mirna_feats_dcast$uniprot_sample %>% 
+  strsplit('--') %>% 
+  sapply('[[', 2) %>% 
+  as.character()
+
+
+noprotsamples = unique(mrna_prot_df$sample_name)[!(unique(mrna_prot_df$sample_name) %in% unique(mirna_feats_dcast$sample_name))]
+if (length(noprotsamples) > 0) {
+  warning(paste(paste0(noprotsamples, collapse = ', '), 'did not have proteomics samples, only transcriptomics'))
+  mrna_prot_df = mrna_prot_df %>% 
+    dplyr::filter(!grepl(pattern = paste0(noprotsamples, collapse = '|'), sample_name))
+}
+
+notranscrsamples = unique(mirna_feats_dcast$sample_name)[!(unique(mirna_feats_dcast$sample_name) %in% unique(mrna_prot_df$sample_name))]
+if (length(notranscrsamples) > 0) {
+  warning(paste(paste0(notranscrsamples, collapse = ', '), 'did not have transcriptomics samples, only proteomics'))
+  mirna_feats_dcast = mirna_feats_dcast %>% 
+    dplyr::filter(!grepl(pattern = paste0(notranscrsamples, collapse = '|'), sample_name))
+  
+}
+
+all(unique(mirna_feats_dcast$sample_name) %in% unique(mrna_prot_df$sample_name)) %>% 
+  stopifnot('sample names different between transcrx and protx'= .)
+
+
+
+seq_depth_mir$sample_name = seq_depth_mir$sample_name %>% 
+  gsub(pattern = 'APAP', replacement = 'APA')
+
 
 i_df = mrna_prot_df
 mrna_prot_df = i_df
