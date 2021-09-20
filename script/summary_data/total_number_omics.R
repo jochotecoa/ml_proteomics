@@ -141,7 +141,7 @@ transcriptomics_cleaning <- function(tissue, compound) {
   stopifnot(all.equal(colnames(mrna_df), colnames(mrna_df_counts)))
   
   
-  return(mrna_df)
+  return(mrna_df_counts)
 }
 
 mirnaomics_cleaning <- function(tissue) {
@@ -227,6 +227,9 @@ prot_df = prot_df %>%
 all_circ = all_transcripts[grepl('circ', rownames(all_transcripts)), ]
 all_linear = all_transcripts[!grepl('circ', rownames(all_transcripts)), ]
 
+nas_sample_linear = all_linear %>% zeroToNa %>% is.na
+expressed_linear_sample = !nas_sample_linear
+
 prot_df_na_count = prot_df %>% apply(1, is.na) %>% t %>% rowSums()
 prot_df_expr = prot_df[prot_df_na_count < ncol(prot_df), ]
 all_circ_expr = all_circ[rowSums(all_circ, na.rm = T) > 0, ]
@@ -238,3 +241,28 @@ prot_df_const = prot_df %>% na.omit()
 all_circ_const = all_circ_expr %>% zeroToNa() %>% na.omit()
 all_linear_const = all_linear_expr %>% zeroToNa() %>% na.omit()
 all_mirna_const = all_mirna_expr %>% zeroToNa() %>% na.omit()
+
+
+asd = character()
+
+
+
+for (variable in 1:nrow(a)) {
+  asd_i = colnames(a)[a[variable, ]] %>% paste0(collapse = '__')
+  asd = c(asd, asd_i)
+  print((variable/nrow(a))*100)
+}
+
+fdas = table(asd)
+
+fdas_2 = fdas %>% names %>% sapply(strsplit, '__') %>% sapply(length)
+
+fdas_3 = fdas %>% names %>% sapply(strsplit, '__')
+
+ddd = fdas[order(fdas_2, decreasing = T)]
+ddd = ddd[!which.max(ddd)]
+
+
+fdas[order(fdas_2, decreasing = T)]
+
+fdas[order(fdas_2, decreasing = T)][2:100] %>% .[which.max(.)]
