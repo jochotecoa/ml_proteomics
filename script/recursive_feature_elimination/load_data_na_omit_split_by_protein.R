@@ -2,16 +2,16 @@
 source('script/functions/functions_JOA.R')
 forceLibrary(c('mlbench', 'caret', 'doParallel', 'dplyr', 'RANN'))
 
-cl <- makePSOCKcluster(15)
-registerDoParallel(cl)
+# cl <- makePSOCKcluster(15)
+# registerDoParallel(cl)
 # load the data
 
 
 # file_X_train = 'data/training_data_preds_na_omit_by_prot.rds'
 # file_Y = 'data/training_data_target_na_omit_by_prot.rds'
 
-X = readRDS(file = 'data/whole_data_preds_na_omit.rds')
-Y = readRDS(file = 'data/whole_data_target_na_omit.rds') %>% 
+X = readRDS(file = 'data/whole_data/preds_na_omit_hepatic.rds')
+Y = readRDS(file = 'data/whole_data/target_na_omit_hepatic.rds') %>% 
   unlist()
 
  
