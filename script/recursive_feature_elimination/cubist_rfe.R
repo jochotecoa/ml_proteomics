@@ -2,13 +2,13 @@
 # cubist
 forceLibrary('Cubist')
 
-sizes = as.integer(seq(2, ncol(X), (ncol(X)-2)/4))[-5]
+sizes = as.integer(seq(2, ncol(X), floor(ncol(X)/4)))[-5]
 
 cubistProfile <- rfe(X, Y,
                    sizes = sizes,
                    rfeControl = rfeControl(functions = caretFuncs, 
                                            verbose = T, 
-                                           method = 'repeatedcv', 
+                                           method = 'cv', 
                                            index = folds),
                    ## pass options to train()
                    method = "cubist")

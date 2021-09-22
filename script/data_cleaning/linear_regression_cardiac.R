@@ -97,7 +97,8 @@ highlyCor = highlyCor[highlyCor != col_circ_mean]
 col_circ_sd = which(!colnames(X) != 'circ_sd')
 highlyCor = c(highlyCor, col_circ_sd)
 
-corrplot::corrplot(descrCor[-highlyCor, highlyCor])
+corrplot::corrplot(descrCor[-highlyCor, highlyCor], tl.cex = 0.75)
+
 if (length(highlyCor) > 0) {
   X <- X[,-highlyCor]
 }
@@ -412,3 +413,4 @@ saveRDS(object = Y_selected_test, file = 'data/test_data_target_na_omit_selected
 # 
 # ggplot(rmse_matrix %>% t %>% melt, aes(x = X1, y = value, col = X2)) +           # Draw line plot with ggplot2
 #   geom_line()
+

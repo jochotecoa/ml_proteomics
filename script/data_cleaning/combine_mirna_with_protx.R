@@ -4,7 +4,7 @@ if (tissue == 'hepatic') {
     score_feats_all = readRDS('data/miRNA/score_feats_all.rds')
     mirna_feats_dcast = readRDS('data/miRNA/mirna_feats_dcast.rds')
     mirna_feats_dcast_all = readRDS('data/miRNA/mirna_feats_dcast_all.rds')
-    seq_depth_mir = readRDS('data/miRNA/seq_depth_mir.rds')
+    # seq_depth_mir = readRDS('data/miRNA/seq_depth_mir.rds')
   } else {
     source('script/data_cleaning/mirna_data_cleaning.R')
   }
@@ -17,7 +17,7 @@ if (tissue == 'cardiac') {
     score_feats_all = readRDS(paste0('data/miRNA/score_feats_all', tissue, '.rds'))
     mirna_feats_dcast = readRDS(paste0('data/miRNA/mirna_feats_dcast_', tissue, '.rds'))
     mirna_feats_dcast_all = readRDS(paste0('data/miRNA/mirna_feats_dcast_all_', tissue, '.rds'))
-    seq_depth_mir = readRDS(paste0('data/miRNA/seq_depth_mir', tissue, '.rds'))
+    # seq_depth_mir = readRDS(paste0('data/miRNA/seq_depth_mir', tissue, '.rds'))
   } else {
     source('script/data_cleaning/mirna_data_cleaning.R')
   }
@@ -63,8 +63,8 @@ mirna_feats_dcast = mirna_feats_dcast %>%
   dplyr::select(-c(sample_name))
 
 
-seq_depth_mir$sample_name = seq_depth_mir$sample_name %>% 
-  gsub(pattern = 'APAP', replacement = 'APA')
+# seq_depth_mir$sample_name = seq_depth_mir$sample_name %>% 
+#   gsub(pattern = 'APAP', replacement = 'APA')
 
 
 i_df = mrna_prot_df
@@ -76,7 +76,7 @@ mrna_prot_df = mrna_prot_df %>%
   merge.data.frame(score_feats_all, 'uniprotswissprot', all.x = T) %>% 
   merge.data.frame(mirna_feats_dcast, 'uniprot_sample', all.x = T) %>% 
   merge.data.frame(mirna_feats_dcast_all, 'uniprot_sample', all.x = T) %>% 
-  merge.data.frame(seq_depth_mir, 'sample_name', all.x = T) %>% 
+  # merge.data.frame(seq_depth_mir, 'sample_name', all.x = T) %>% 
   column_to_rownames('uniprot_sample')
 
 colnames(mrna_prot_df)[grep('seq_depth', colnames(mrna_prot_df))] = 'seq_depth_mirna'

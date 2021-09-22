@@ -21,9 +21,9 @@ Y = readRDS(file = 'data/whole_data_target_na_omit.rds') %>%
 # dplyr::select(!contains('strand')) # including the strand column gives always an error, independently of the algorithm used
 
 # sizes = seq(1, ncol(X), (ncol(X)-1)/5) %>% as.integer()
-sizes = seq(1, ncol(X), 1) %>% as.integer()
+sizes = as.integer(seq(2, ncol(X), floor(ncol(X)/4)))[-5]
 
-path_output = '../output_rfe/split_by_prot/na_omit'
+path_output = '../output_rfe/split_by_prot/na_omit/hepatic/72_features'
 if (!dir.exists(path_output)) {
   dir.create(path_output, recursive = T)
 }

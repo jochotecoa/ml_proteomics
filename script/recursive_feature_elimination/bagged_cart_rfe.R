@@ -2,14 +2,12 @@
 
 forceLibrary(c('ipred', 'plyr', 'e1071')) # Needed for bagged trees
 
-sizes = as.integer(seq(2, ncol(X), (ncol(X)-2)/4))[-5]
-
   bagProfile <- rfe(X, Y,
                     sizes = sizes,
                     rfeControl = rfeControl(functions = treebagFuncs,
                                             verbose = T,
                                             allowParallel = T, 
-                                            method = 'repeatedcv', 
+                                            method = 'cv', 
                                             index = folds))
   file_rds = paste0(path_output, '/bagProfile.rds')
   saveRDS(bagProfile, file_rds)

@@ -22,7 +22,7 @@ Y = readRDS(file = 'data/whole_data/target_na_omit_hepatic.rds') %>%
 
 # sizes = seq(1, ncol(X), (ncol(X)-1)/5) %>% as.integer()
 
-path_output = '../output_rfe/split_by_sample/na_omit/hepatic/72_features'
+path_output = '../output_rfe/split_random/na_omit/hepatic/72_features'
 
 if (!dir.exists(path_output)) {
   dir.create(path_output, recursive = T)
@@ -32,6 +32,6 @@ train_samples = X %>% rownames() %>% strsplit('--') %>% sapply('[[', 2)
 
 sizes = as.integer(seq(2, ncol(X), floor(ncol(X)/4)))[-5]
 
-folds = groupKFold(train_samples, k = 10)
+folds = NULL
 
 repeats = 1

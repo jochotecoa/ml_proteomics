@@ -96,12 +96,12 @@ colnames(mirna_counts) = colnames(mirna_counts) %>%
 
 # Creating seq_depth_mir feature ------------------------------------------
 
-seq_depth_mir = mirna_counts %>% 
-  colSums(na.rm = T) %>% 
-  data.frame(seq_depth = .) %>% 
-  rownames_to_column('sample_name')
-
-saveRDS(seq_depth_mir, paste0('data/miRNA/seq_depth_mir', tissue, '.rds'))
+# seq_depth_mir = mirna_counts %>% 
+#   colSums(na.rm = T) %>% 
+#   data.frame(seq_depth = .) %>% 
+#   rownames_to_column('sample_name')
+# 
+# saveRDS(seq_depth_mir, paste0('data/miRNA/seq_depth_mir', tissue, '.rds'))
 
 # Connect the miR IDs with the ENSTs --------------------------------------
 

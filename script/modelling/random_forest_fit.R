@@ -6,10 +6,10 @@ sizes = 1:ncol(X)
 
 RMSE_df = data.frame()
 
-X_clean_2 = X_clean %>% 
+X_clean_2 = X %>% 
   dplyr::select(circ_sum, circ_mean, circ_mean_log2, linear_density, TPM_value_mean_log2, mirna_mean_stringent, mirna_mean_stringent_log2, mirna_sum_stringent, Aa_M_prop, Aa_D_prop)
 
-rfFit <- train(X_clean_2, Y_clean,
+rfFit <- train(X_clean_2, Y,
                method = 'rf',
                trControl  = trainControl(method = 'cv', 
                                          index = folds))
