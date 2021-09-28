@@ -31,7 +31,7 @@ i_df = mrna_prot_df
 ncol(mrna_prot_df) - 1
 nzv_m <- nearZeroVar(mrna_prot_df, saveMetrics = T)
 nzv <- nearZeroVar(mrna_prot_df)
-nzv_m[nzv, ] %>% View()
+nzv_df = nzv_m[nzv, ]
 
 if (length(nzv) > 0) {
   zv_colnames = colnames(mrna_prot_df)[nzv_m$zeroVar]
@@ -53,7 +53,14 @@ ncol(mrna_prot_df) - 1
 ncol(mrna_prot_df) - 1
 nzv_m <- nearZeroVar(mrna_prot_df, saveMetrics = T)
 nzv <- nearZeroVar(mrna_prot_df)
-nzv_m[nzv, ] %>% View()
+nzv_df = rbind(nzv_df, nzv_m[nzv, ])
+
+if (!dir.exists('output/pre-processing/')) {
+  dir.create('output/pre-processing/')
+}
+
+write.csv(x = nzv_df, file = 'output/pre-processing/nzv_df.csv')
+
 
 if (length(nzv) > 0) {
   zv_colnames = colnames(mrna_prot_df)[nzv_m$zeroVar]
@@ -97,7 +104,7 @@ highlyCor = highlyCor[highlyCor != col_circ_mean]
 col_circ_sd = which(!colnames(X) != 'circ_sd')
 highlyCor = c(highlyCor, col_circ_sd)
 
-corrplot::corrplot(descrCor[-highlyCor, highlyCor], tl.cex = 0.75)
+corrplot::corrplot(descrCor[highlyCor, -highlyCor], tl.cex = 0.75)
 
 if (length(highlyCor) > 0) {
   X <- X[,-highlyCor]
