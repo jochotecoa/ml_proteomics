@@ -56,7 +56,7 @@ aml = h2o.automl(x = pred, y = y,
                  training_frame = train_h,
                  # max_models = 20,
                  seed = 1,
-                 max_runtime_secs = 3600
+                 # max_runtime_secs = 3600
 )
 
 # AutoML Leaderboard

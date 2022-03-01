@@ -56,7 +56,7 @@ aml = h2o.automl(x = pred, y = y,
                  training_frame = train_h,
                  # max_models = 20,
                  seed = 1,
-                 max_runtime_secs = 3600
+                 # max_runtime_secs = 3600
 )
 
 # AutoML Leaderboard
@@ -74,7 +74,7 @@ b = data.frame(obs = a, pred = prediction_df)
 d = cor(b)
 d^2 %>% print()
 
-caret::confusionMatrix(test$Species, prediction$predict)
+# caret::confusionMatrix(test$Species, prediction$predict)
 
 # close h2o connection
 h2o.shutdown(prompt = F)
