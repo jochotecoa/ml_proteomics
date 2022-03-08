@@ -89,25 +89,12 @@ best_goterms = rsquared_go_results[order(rsquared_go_results$rsquared), ] %>% ta
 barplot_goterms = rbind(worst_goterms, best_goterms)
 
 
-pdf()
-
-par(mar=c(4,14,4,4))
-barplot(barplot_goterms$rsquared, 
-        names.arg = d$goterm, 
-        horiz = T, 
-        las =2, 
-        xlim = c(0, 1), 
-        main = 'Best and worse GO terms by Rsquared')# rsquared_go_results %<>% na.omit()
-
-
-dev.off()
-
 tiff("output/plots/best_worse_goterms.tiff", units="in", width=10, height=5, res=300)
 par(mar=c(4,14,4,8))
 barplot(barplot_goterms$rsquared, 
         names.arg = d$goterm, 
         horiz = T, 
-        las =2, 
+        las = 1, 
         xlim = c(0, 1), 
         main = 'Best and worse predicted proteins grouped by GO terms (Rsquared)')# rsquared_go_results %<>% na.omit()
 
